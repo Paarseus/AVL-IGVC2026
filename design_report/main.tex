@@ -1,0 +1,708 @@
+\documentclass[12pt, letterpaper]{article}
+
+% --- Packages ----------------------------------------------------------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{amsmath}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{parskip}
+\usepackage{hyperref}
+
+% --- Colors ------------------------------------------------------------------
+\definecolor{cppgreen}{RGB}{0,100,60}
+\definecolor{cppdarkgreen}{RGB}{0,75,35}
+\definecolor{cppgold}{RGB}{198,166,84}
+
+% --- Header / Footer ---------------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\lhead{Cal Poly Pomona -- Autonomous Vehicle Laboratory -- IGVC 2026 AutoNav}
+\rfoot{\thepage}
+
+% --- Section formatting ------------------------------------------------------
+\titleformat{\section}{\Large\bfseries}{}{0em}{\thesection.~}
+\titleformat{\subsection}{\large\bfseries}{}{0em}{\thesubsection~}
+
+% --- Hyperref setup ----------------------------------------------------------
+\hypersetup{
+    colorlinks=true,
+    linkcolor=cppdarkgreen,
+    urlcolor=cppdarkgreen,
+    citecolor=cppdarkgreen
+}
+
+% --- Code listing style ------------------------------------------------------
+\lstset{
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{cppdarkgreen}\bfseries,
+    commentstyle=\color{gray},
+    stringstyle=\color{cppgold},
+    breaklines=true,
+    frame=single,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    tabsize=4
+}
+
+% =============================================================================
+\begin{document}
+
+% --- Title Page --------------------------------------------------------------
+\begin{titlepage}
+\centering
+
+\vspace*{1cm}
+
+% Replace with actual logo files:
+% \includegraphics[height=1.5cm]{figures/avl_logo.png}
+% \hfill
+% \includegraphics[height=1.5cm]{figures/cpp_logo.png}
+
+{\Large\textbf{California State Polytechnic University, Pomona}}\\[0.3cm]
+{\LARGE\textbf{Autonomous Vehicle Laboratory}}\\[0.3cm]
+{\Large\textbf{IGVC 2026 Design Report}}\\[1.2cm]
+
+{\fontsize{36}{42}\selectfont\textbf{\textit{ROBOT NAME}}}\\[1.5cm]
+
+% \includegraphics[width=0.55\textwidth]{figures/robot_render.png}
+
+\vspace{2cm}
+
+\begin{minipage}{0.8\textwidth}
+\centering
+I hereby certify that the development of the vehicle, \textit{ROBOT NAME}, as described in this report, is equivalent to the work involved in a senior design course.\\[1.5cm]
+
+\rule{8cm}{0.4pt}\\
+Submitted May XX, 2026
+\end{minipage}
+
+\vspace{1.5cm}
+
+\begin{tabular}{ccc}
+\textbf{Software} & \textbf{Mechanical} & \textbf{Electrical} \\
+\midrule
+Name & Name (Captain) & Name \\
+Name & Name & Name \\
+Name & Name & Name \\
+Name &  &  \\
+\end{tabular}
+
+\end{titlepage}
+
+% --- Table of Contents -------------------------------------------------------
+\thispagestyle{fancy}
+\tableofcontents
+\newpage
+
+% =============================================================================
+% SECTION 1
+% =============================================================================
+\section{Design Process, Team Identification and Organization}
+
+\subsection{Introduction}
+
+The Autonomous Vehicle Laboratory (AVL), representing California State Polytechnic University, Pomona (Cal Poly Pomona) and the College of Engineering, proudly presents \textit{ROBOT NAME}, our entry for the 2026 Intelligent Ground Vehicle Competition (IGVC) in the AutoNav category. AVL is a multidisciplinary student organization within the College of Engineering, with a dedicated IGVC team of XX students. The team is advised by ADVISOR NAME(S), faculty member(s) at Cal Poly Pomona.
+
+Cal Poly Pomona's learn-by-doing philosophy is at the core of AVL's approach. Every component of the vehicle---from mechanical design to embedded firmware to autonomous navigation software---is designed, built, and tested by students. This is the team's first entry in the IGVC competition.
+
+\subsection{Team Organization}
+
+The IGVC team is organized into three specialized subteams: electrical, mechanical, and software. A team captain serves as the primary point of contact with AVL leadership and faculty advisors, providing regular updates on progress and coordinating across subteams.
+
+\begin{itemize}[nosep]
+    \item \textbf{Mechanical:} Chassis design, drivetrain, sensor mounting, weatherproofing
+    \item \textbf{Electrical:} Power distribution, motor controllers, PCB design, CAN bus, e-stop
+    \item \textbf{Software:} Perception, navigation, localization, firmware, GUI
+\end{itemize}
+
+To promote communication and prevent silos, the team holds weekly full-team meetings in addition to subteam work sessions. All design decisions are documented and version-controlled.
+
+\subsection{Design Process}
+
+To develop \textit{ROBOT NAME}, the team implemented an iterative design process that focuses on a cycle of researching, designing, prototyping, and testing.
+
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.7\textwidth]{figures/design_process.png}
+%     \caption{Iterative design process.}
+%     \label{fig:design_process}
+% \end{figure}
+
+\begin{enumerate}[nosep]
+    \item \textbf{Define} --- Establish system-level requirements from competition rules.
+    \item \textbf{Research} --- Survey existing solutions, reference designs, and prior IGVC reports.
+    \item \textbf{Design} --- Create detailed CAD models, schematics, and software architecture.
+    \item \textbf{Prototype} --- Build rapid prototypes (3D-printed parts, breadboard circuits, simulation).
+    \item \textbf{Test} --- Validate each subsystem independently, then integrate.
+    \item \textbf{Implement} --- Finalize manufacturing and deploy to the competition vehicle.
+\end{enumerate}
+
+The team began by analyzing design reports from prior IGVC winners and performing a full re-read of the 2026 competition rules to derive a list of rule-based requirements. From these, the team established high-level design goals. With the system-level requirements defined, subteams proceeded to research, design, build, and test the necessary components. As each subsystem was completed, integration testing ensured that all components worked cohesively and that the robot met its overall requirements.
+
+\newpage
+
+% =============================================================================
+% SECTION 2
+% =============================================================================
+\section{System Architecture}
+
+\subsection{Mechanical and Electrical Architecture}
+
+At a high level, \textit{ROBOT NAME} consists of several independent subsystems: chassis, drivetrain, vision, sensors, and electronics.
+
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.85\textwidth]{figures/system_block_diagram.png}
+%     \caption{High-level system architecture.}
+%     \label{fig:sys_arch}
+% \end{figure}
+
+\begin{table}[H]
+\centering
+\caption{Major subsystems overview.}
+\begin{tabularx}{\textwidth}{lX}
+\toprule
+\textbf{Subsystem} & \textbf{Description} \\
+\midrule
+Chassis          & TODO: Material, dimensions, design philosophy \\
+Drivetrain       & Differential drive with 2$\times$ REV SparkMAX controllers and NEO/550 motors \\
+Compute          & TODO: Intel NUC / Jetson / Raspberry Pi \\
+Microcontroller  & Teensy 4.1 --- CAN bridge between main computer and motor controllers \\
+Sensors          & TODO: Camera(s), GPS/IMU, ultrasonics/LiDAR \\
+Power            & TODO: Battery type, voltage, capacity \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Robot Safety}
+
+\textit{ROBOT NAME} was designed with safety as a fundamental principle. Power is delivered to the drive motors only when the following conditions are simultaneously met:
+
+\begin{enumerate}[nosep]
+    \item The \textbf{remote emergency stop} is inactive (wireless e-stop not triggered).
+    \item The \textbf{physical emergency stop} button on the vehicle is not pressed.
+    \item The \textbf{software emergency stop} has not been asserted.
+\end{enumerate}
+
+If any one of these is triggered, motor power is immediately cut. To prevent accidental re-engagement, each of the three signals is also monitored redundantly in software. As a result, the robot will not send any non-zero command to the motors unless all safety interlocks are satisfied.
+
+\subsection{Software Architecture}
+
+The software is split into four major subsystems: sensors, perception, localization, and navigation.
+
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.9\textwidth]{figures/software_architecture.png}
+%     \caption{Software architecture and data flow.}
+%     \label{fig:sw_arch}
+% \end{figure}
+
+\begin{itemize}[nosep]
+    \item \textbf{Sensors} --- Camera capture, GPS/IMU reading, motor encoder feedback
+    \item \textbf{Perception} --- Image processing, obstacle detection, lane detection
+    \item \textbf{Localization} --- Sensor fusion (wheel odometry + GPS) for position estimation
+    \item \textbf{Navigation} --- Path planning and motor command generation
+\end{itemize}
+
+Organizing the code in this modular way allows for easy testing of each subsystem independently as well as making testing different algorithms or parameters quick and easy.
+
+\subsection{Robot Communication Bus}
+
+Data is communicated between devices using the \textbf{CAN bus} protocol, a robust standard widely used in the automotive industry. The Teensy 4.1 microcontroller serves as the CAN bridge between the main onboard computer and the REV SparkMAX motor controllers.
+
+The CAN bus operates at \textbf{1\,Mbit/s} using 29-bit extended frames. A CAN transceiver (SN65HVD230) converts the Teensy's logic-level signals to differential CAN\_H / CAN\_L. The bus is terminated with 120\,$\Omega$ resistors at each end.
+
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.8\textwidth]{figures/can_bus_diagram.png}
+%     \caption{CAN bus topology.}
+%     \label{fig:can_bus}
+% \end{figure}
+
+\subsection{Bill of Materials}
+
+The total cost to construct \textit{ROBOT NAME} was approximately \$X,XXX.
+
+\begin{table}[H]
+\centering
+\caption{Major COTS components.}
+\begin{tabularx}{\textwidth}{Xccr}
+\toprule
+\textbf{Major COTS Item} & \textbf{Qty} & \textbf{Market Cost (USD)} & \textbf{Team Cost (USD)} \\
+\midrule
+TODO: Main Computer             & 1 & \$XXX.00 & \$XXX.00 \\
+TODO: Camera(s)                 & 1 & \$XXX.00 & \$XXX.00 \\
+TODO: Battery                   & 1 & \$XX.00  & \$XX.00 \\
+TODO: GPS/IMU                   & 1 & \$X,XXX.00 & \$XXX.00 \\
+REV SparkMAX + NEO Motor        & 2 & \$XXX.00 & \$XXX.00 \\
+Teensy 4.1                      & 1 & \$30.00  & \$30.00 \\
+CAN Transceiver (SN65HVD230)    & 1 & \$5.00   & \$5.00 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\newpage
+
+% =============================================================================
+% SECTION 3
+% =============================================================================
+\section{Effective Innovations}
+
+\subsection{Innovation 1: TODO}
+
+% Describe what makes your drivetrain approach unique or well-suited for the competition.
+
+TODO: Describe your team's primary mechanical or drivetrain innovation.
+
+\subsection{Innovation 2: TODO}
+
+% Describe your key software or sensor innovation.
+
+TODO: Describe your team's primary software or perception innovation.
+
+\subsection{Custom CAN Firmware for SparkMAX Control}
+
+The team developed custom firmware for the Teensy 4.1 microcontroller that communicates directly with REV SparkMAX motor controllers over CAN bus. This eliminates the need for a roboRIO or additional middleware, reducing cost, latency, and complexity. The firmware handles:
+
+\begin{itemize}[nosep]
+    \item Non-RIO heartbeat broadcast to keep SparkMAXes enabled
+    \item Percent-output, velocity, and position command modes
+    \item Periodic encoder feedback parsing for odometry
+    \item Serial interface for integration with the main onboard computer
+\end{itemize}
+
+\newpage
+
+% =============================================================================
+% SECTION 4
+% =============================================================================
+\section{Mechanical Design}
+
+\subsection{Overview}
+
+The mechanical design of \textit{ROBOT NAME} is focused on simplicity, reliability, ease of access to electronics, weatherproofing, and modularity. The vehicle uses a differential drive configuration with two independently driven wheels and one or two passive caster wheel(s) for stability.
+
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.6\textwidth]{figures/mechanical_overview.png}
+%     \caption{Mechanical overview of \textit{ROBOT NAME}.}
+%     \label{fig:mech_overview}
+% \end{figure}
+
+\subsection{Drivetrain}
+
+\textit{ROBOT NAME} features a differential drive system powered by two REV SparkMAX motor controllers, each driving a REV NEO brushless motor. The differential drive configuration was chosen for its simplicity, reliability, and proven performance in outdoor environments.
+
+\begin{table}[H]
+\centering
+\caption{Drivetrain specifications.}
+\begin{tabularx}{\textwidth}{Xr}
+\toprule
+\textbf{Parameter} & \textbf{Value} \\
+\midrule
+Drive type           & Differential \\
+Motors               & 2$\times$ REV NEO \\
+Motor controllers    & 2$\times$ REV SparkMAX \\
+Gear ratio           & TODO \\
+Wheel diameter       & TODO \\
+Wheel type           & TODO \\
+Designed top speed   & TODO \\
+Track width          & TODO \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Each motor is connected to its wheel through a gearbox/belt/chain drive. The gear ratio was selected so that the peak of the motor power curve falls at typical IGVC operating speeds.
+
+\subsection{Frame and Sensor Mast}
+
+The frame is constructed from TODO: material (e.g., 80/20 aluminum extrusion, welded aluminum, steel tube). A deliberate effort was made to design for ease of access to internal electronics and for modularity so that subsystems can be quickly swapped or repaired.
+
+A sensor mast is mounted at the center/front of the robot to elevate the camera(s) and GPS antenna. Maximizing the height of the cameras provides a wider field of view and allows the image to be projected onto a 2D plane with minimal distortion.
+
+\subsection{Weatherproofing}
+
+\textit{ROBOT NAME} features acrylic panels / polycarbonate enclosure for protection from rain and sun. Weatherstripping and gaskets protect sensitive electronic components. All cable pass-throughs are sealed to prevent water ingress.
+
+\newpage
+
+% =============================================================================
+% SECTION 5
+% =============================================================================
+\section{Electronic and Power Design}
+
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.95\textwidth]{figures/electrical_diagram.png}
+%     \caption{Electronic and power architecture of \textit{ROBOT NAME}.}
+%     \label{fig:elec_arch}
+% \end{figure}
+
+\subsection{Overview}
+
+The electronic system of \textit{ROBOT NAME} is designed for modularity and repairability. The architecture features the following key components:
+
+\begin{itemize}[nosep]
+    \item \textbf{Main computer} --- TODO: describe
+    \item \textbf{Teensy 4.1} --- CAN bridge handling motor control and encoder feedback
+    \item \textbf{CAN transceiver} --- SN65HVD230 converting logic-level to differential CAN
+    \item \textbf{2$\times$ REV SparkMAX} --- Brushless motor controllers with built-in PID
+    \item \textbf{E-stop system} --- Hardware relay controlled by physical + wireless + software interlocks
+    \item \textbf{Safety lights} --- TODO: RGB LED strip / indicator lights
+\end{itemize}
+
+\subsection{Power Distribution}
+
+The vehicle uses a TODO: 12V XXAh battery to power both the electronics and the drivetrain.
+
+\begin{table}[H]
+\centering
+\caption{Power budget.}
+\begin{tabularx}{\textwidth}{Xrrr}
+\toprule
+\textbf{Component} & \textbf{Voltage (V)} & \textbf{Peak Current (A)} & \textbf{Avg Current (A)} \\
+\midrule
+Main computer       & TODO & TODO & TODO \\
+Teensy 4.1          & 5 (via USB) & 0.1 & 0.05 \\
+SparkMAX + motors   & 12 & TODO & TODO \\
+Sensors / cameras   & TODO & TODO & TODO \\
+Safety lights       & TODO & TODO & TODO \\
+\midrule
+\textbf{Total}      & --- & TODO & TODO \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Motor Control}
+
+\textit{ROBOT NAME} controls its two drive motors by commanding the SparkMAX controllers over a dedicated CAN bus. The Teensy 4.1 serves as the CAN bridge, translating high-level commands from the main computer (received over USB Serial) into SparkMAX CAN frames.
+
+The SparkMAX controllers use REV Robotics' proprietary CAN protocol with 29-bit extended identifiers. The CAN ID is structured as follows:
+
+\begin{table}[H]
+\centering
+\caption{SparkMAX CAN ID bit-field layout (29-bit extended).}
+\begin{tabularx}{\textwidth}{Xccl}
+\toprule
+\textbf{Field} & \textbf{Bits} & \textbf{Width} & \textbf{Value} \\
+\midrule
+Device Type    & 28:24 & 5 bits & 2 (Motor Controller) \\
+Manufacturer   & 23:16 & 8 bits & 5 (REV Robotics) \\
+API Class      & 15:10 & 6 bits & Varies by command \\
+API Index      & 9:6   & 4 bits & Varies by command \\
+Device ID      & 5:0   & 6 bits & 1--62 (unique per controller) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Key API commands used:
+
+\begin{itemize}[nosep]
+    \item \textbf{Non-RIO Heartbeat} (Class 11, Index 2) --- Sent every 20\,ms to keep controllers enabled
+    \item \textbf{Percent Output} (Class 0, Index 2) --- Motor duty cycle from $-1.0$ to $+1.0$
+    \item \textbf{Velocity Setpoint} (Class 1, Index 2) --- Target RPM using SparkMAX internal PID
+    \item \textbf{Encoder Feedback} (Class 6, Index 2) --- Periodic drive encoder position reports
+\end{itemize}
+
+All floating-point values are encoded as IEEE 754 single-precision floats in little-endian byte order. By offloading the PID control loop onto the SparkMAX controllers, we simplify the firmware and reduce end-to-end latency.
+
+\subsection{Safety Lights}
+
+Safety lights on the vehicle indicate the autonomous state as required by IGVC rules.
+
+\begin{table}[H]
+\centering
+\caption{Safety light color mapping.}
+\begin{tabularx}{\textwidth}{lX}
+\toprule
+\textbf{Light Color} & \textbf{Meaning} \\
+\midrule
+White   & Standard operation \\
+Yellow  & Waypoint following activated \\
+Green   & Waypoint reached \\
+Red     & Unable to move forward / error \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Emergency Stop and Safety}
+
+Safety is a top priority for the vehicle and is at the core of our electrical design. The emergency stop circuit features three interlocks that must all be disengaged for the motors to receive power:
+
+\begin{enumerate}[nosep]
+    \item \textbf{On-vehicle button} --- Physical red mushroom-head e-stop button.
+    \item \textbf{Remote button} --- Wireless e-stop with $>$100\,ft range, as required by IGVC rules.
+    \item \textbf{Software interlock} --- Software-controlled relay that is only enabled when all nodes report healthy status.
+\end{enumerate}
+
+Motor power is gated by a solid-state relay controlled directly by the e-stop line. If any interlock is triggered, power to the motor controllers is immediately cut regardless of software state.
+
+\newpage
+
+% =============================================================================
+% SECTION 6
+% =============================================================================
+\section{Software Systems}
+
+\subsection{Overview}
+
+Our software uses the \textbf{Robot Operating System (ROS 2)}, a robotics middleware that is widely used in both academia and industry. It is based on a publisher-subscriber model, with individual processes called nodes sending messages to each other. This allows for much of the software work to be developed in parallel in separate packages.
+
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.9\textwidth]{figures/vision_pipeline.png}
+%     \caption{Vision processing pipeline.}
+%     \label{fig:vision}
+% \end{figure}
+
+\subsection{Image Transformation}
+
+\textit{ROBOT NAME} uses a classical computer vision approach to transform camera image(s) into an obstacle map that the vehicle can use to navigate.
+
+The images are processed through the following pipeline:
+
+\begin{enumerate}[nosep]
+    \item \textbf{Camera calibration} --- Correct lens distortion using a calibration matrix.
+    \item \textbf{Perspective transform} --- Project the camera image onto a top-down 2D plane.
+    \item \textbf{Color filtering} --- Apply HSV thresholding to detect lane lines and obstacles.
+    \item \textbf{Obstacle map generation} --- Combine filtered images into a unified obstacle map.
+\end{enumerate}
+
+TODO: Describe any auto-calibration or adaptation to lighting conditions.
+
+\subsection{Navigation}
+
+TODO: Describe your path planning and navigation algorithm.
+
+The navigation system receives the obstacle map from the perception subsystem and the current position from the localization subsystem. It computes motor commands that guide the vehicle toward the next GPS waypoint while avoiding detected obstacles.
+
+\subsection{Localization}
+
+Autonomous localization is required for qualifying for and completing the IGVC AutoNav challenge. Waypoint navigation is only possible with accurate and precise location data.
+
+\textit{ROBOT NAME} uses a particle filter / extended Kalman filter that combines:
+\begin{itemize}[nosep]
+    \item \textbf{Wheel odometry} --- Encoder feedback from the SparkMAX motor controllers, transmitted through the Teensy 4.1 over CAN bus.
+    \item \textbf{GPS data} --- TODO: GPS module name and accuracy specifications.
+    \item \textbf{IMU data} --- TODO: IMU name providing heading and angular velocity.
+\end{itemize}
+
+This fused location data is consumed by the path planner as the robot's current position and is used to determine waypoint arrival and distance from the start of the course.
+
+\subsection{Drive Control}
+
+The main computer publishes desired linear and angular velocity commands. These are converted to individual left/right wheel speeds using the differential drive kinematic model:
+
+\begin{align}
+    v_L &= v - \frac{\omega \cdot d}{2} \\
+    v_R &= v + \frac{\omega \cdot d}{2}
+\end{align}
+
+where $v$ is the desired linear velocity, $\omega$ is the desired angular velocity, and $d$ is the track width (distance between wheel centers).
+
+The computed wheel speeds are sent to the Teensy 4.1 over USB Serial, which translates them into SparkMAX CAN commands. Encoder feedback from both motors is read by the Teensy and sent back to the main computer for odometry computation.
+
+\subsection{Configuration and GUI}
+
+TODO: Describe any GUI, configuration system, or parameter tuning tools.
+
+Configuration of tunable parameters is handled via a custom GUI / ROS parameter server running on the main computer. This allows the team to tune the robot on-the-fly without recompiling code.
+
+\subsection{State Machine}
+
+The robot operates using a state machine that manages transitions between the following system states:
+
+\begin{itemize}[nosep]
+    \item \textbf{Disabled} --- Motors off, all subsystems idle.
+    \item \textbf{Manual} --- Operator control via gamepad/controller for testing.
+    \item \textbf{Autonomous} --- Full autonomy, running perception + navigation + localization.
+    \item \textbf{Emergency Stop} --- Immediate motor cutoff, requires manual reset.
+\end{itemize}
+
+Each software node also maintains its own local state (off, warming, ready, operating, error) to ensure all subsystems are healthy before autonomous operation begins.
+
+\subsection{Logging}
+
+TODO: Describe your data logging strategy for post-run analysis.
+
+After every run, a comprehensive log file is created containing sensor readings (camera feeds, GPS, IMU, encoder feedback), diagnostic metrics, navigation targets, and debug information.
+
+\newpage
+
+% =============================================================================
+% SECTION 7
+% =============================================================================
+\section{Cyber Security Analysis}
+
+\subsection{NIST RMF Process}
+
+Security vulnerabilities in self-driving vehicles pose significant risks. To effectively mitigate these threats, the team follows the NIST Risk Management Framework (RMF), which provides a structured process for identifying, assessing, and managing risks throughout the system's life cycle.
+
+\subsection{Vehicle Threats}
+
+\begin{table}[H]
+\centering
+\caption{Threat assessment matrix.}
+\begin{tabularx}{\textwidth}{lXccc}
+\toprule
+\textbf{Subsystem} & \textbf{Threat Description} & \textbf{Confid.} & \textbf{Integrity} & \textbf{Avail.} \\
+\midrule
+GPS Waypoints    & GPS waypoint tampering could lead the vehicle to drive in unintended ways. & Low & High & High \\
+\addlinespace
+Remote E-stop    & Malicious interference could disable or trigger the e-stop. & Moderate & High & High \\
+\addlinespace
+Onboard Computer & Malware or unauthorized access could compromise system control. & High & High & High \\
+\addlinespace
+Odometry         & Sensor data tampering can result in incorrect state estimation. & Low & High & Moderate \\
+\addlinespace
+CAN Bus          & CAN frame injection could send unauthorized motor commands. & Moderate & High & High \\
+\addlinespace
+Git Repository   & Unauthorized access could inject malicious code. & High & High & Moderate \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Cyber Controls and Implementation}
+
+\begin{table}[H]
+\centering
+\caption{Security controls.}
+\begin{tabularx}{\textwidth}{lXX}
+\toprule
+\textbf{Subsystem} & \textbf{Control} & \textbf{Implementation} \\
+\midrule
+GPS Waypoints    & SI-4 System Monitoring & Display GPS waypoints to the user and validate using range checks. \\
+\addlinespace
+Remote E-stop    & AC-3 Access Enforcement & Authenticate and/or encrypt the e-stop radio channel. \\
+\addlinespace
+Onboard Computer & SC-28 Protection of Information at Rest & Use secure boot, enable SSH authentication, and disable passwords. \\
+\addlinespace
+Odometry         & SI-7 Information Integrity & Validate sensor input using range checks and sensor fusion. \\
+\addlinespace
+CAN Bus          & SC-8 Transmission Confidentiality & Monitor for anomalous CAN traffic; heartbeat watchdog timeout. \\
+\addlinespace
+Git Repository   & CM-5 Access Restrictions for Change & Enforce code access control with role-based permissions. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\newpage
+
+% =============================================================================
+% SECTION 8
+% =============================================================================
+\section{Vehicle Analysis}
+
+\subsection{Lessons Learned}
+
+TODO: Describe the key lessons your team learned during the design and build process.
+
+\subsection{Failure Points and Resolutions}
+
+\begin{table}[H]
+\centering
+\caption{Failure points and resolutions.}
+\begin{tabularx}{\textwidth}{lXXX}
+\toprule
+\textbf{Category} & \textbf{Failure Point} & \textbf{Cause} & \textbf{Resolution} \\
+\midrule
+Mechanical  & Fasteners loosen & Vibrations from driving & Loctite and Nyloc nuts \\
+\addlinespace
+Electrical  & E-stop connection lost & Remote goes out of range & Heartbeat timeout stops robot \\
+\addlinespace
+Electrical  & CAN bus errors & Wiring / termination issues & Added proper 120\,$\Omega$ termination \\
+\addlinespace
+Software    & Obstacle misdetection & Changing weather / lighting & Auto HSV calibration at startup \\
+\addlinespace
+Software    & Sensor data loss & Cable disconnect / node crash & Watchdog monitors node health \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Safety, Reliability, and Durability}
+
+\textit{ROBOT NAME} was designed from the ground up to be safe, reliable, and durable in all conditions. Through dozens of test runs in various scenarios---sensor loss, changing weather conditions, e-stop testing---the team has verified that the robot reliably activates all of its safety measures.
+
+TODO: Describe specific reliability testing you performed.
+
+\subsection{Performance Metrics}
+
+\begin{table}[H]
+\centering
+\caption{Performance metrics.}
+\begin{tabularx}{\textwidth}{Xlr}
+\toprule
+\textbf{Parameter} & \textbf{Requirement} & \textbf{Measured Value} \\
+\midrule
+Course Completion Time   & $<$5 minutes   & TODO \\
+Obstacle Detection Range & $>$2 meters    & TODO \\
+Obstacle Reaction Time   & $<$250 ms      & TODO \\
+Remote E-stop Range      & $>$100 ft      & TODO \\
+Navigation Accuracy      & $<$1 meter     & TODO \\
+Battery Life             & $>$5 minutes   & TODO \\
+Ramp Ascension           & Successful     & TODO \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Software Testing, Bug Tracking, and Version Control}
+
+The software subteam utilizes Git and GitHub to store and version control the codebase. By utilizing branches for each new feature, those features can be isolated and independently tested before being merged into the main codebase.
+
+TODO: Describe your CI/CD pipeline, testing framework, and bug tracking process.
+
+\subsection{Simulation}
+
+TODO: Describe any simulation environment you use (Gazebo, custom simulator, Unity, etc.).
+
+% \begin{figure}[H]
+%     \centering
+%     \includegraphics[width=0.7\textwidth]{figures/simulation.png}
+%     \caption{Simulation environment.}
+%     \label{fig:sim}
+% \end{figure}
+
+\newpage
+
+% =============================================================================
+% SECTION 9
+% =============================================================================
+\section{Unique AutoNav and Self Drive Software}
+
+\textit{ROBOT NAME} is competing in AutoNav only / is competing in both AutoNav and Self Drive.
+
+AutoNav and Self Drive share many core features such as lane keeping and obstacle avoidance. However, Self Drive requires additional capabilities such as:
+
+\begin{itemize}[nosep]
+    \item Lane changing
+    \item Stop sign detection and compliance
+    \item Merging
+    \item Parking
+\end{itemize}
+
+TODO: Describe any unique software features for each mode.
+
+\newpage
+
+% =============================================================================
+% SECTION 10
+% =============================================================================
+\section{Performance Assessment}
+
+As of submitting this report, \textit{ROBOT NAME} is on track for competition. Through extensive testing, the drivetrain, vision pipeline, and navigation systems have been validated.
+
+TODO: Summarize overall readiness for competition. Be honest about what is complete and what remains.
+
+\end{document}
