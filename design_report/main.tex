@@ -76,7 +76,7 @@
 
 {\fontsize{36}{42}\selectfont\textbf{\textit{ROBOT NAME}}}\\[1.5cm]
 
-% \includegraphics[width=0.55\textwidth]{figures/robot_render.png}
+\includegraphics[width=0.55\textwidth]{figures/mech_image1.png}
 
 \vspace{2cm}
 
@@ -160,14 +160,14 @@ The team began by analyzing design reports from prior IGVC winners and performin
 
 \subsection{Mechanical and Electrical Architecture}
 
-At a high level, \textit{ROBOT NAME} consists of several independent subsystems: chassis, drivetrain, vision, sensors, and electronics.
+At a high level, \textit{ROBOT NAME} consists of several independent subsystems: chassis and tracked drivetrain, vision, sensors, and electronics.
 
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[width=0.85\textwidth]{figures/system_block_diagram.png}
-%     \caption{High-level system architecture.}
-%     \label{fig:sys_arch}
-% \end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{figures/electrical_p1_img1.png}
+    \caption{High-level electronic and power system architecture.}
+    \label{fig:sys_arch}
+\end{figure}
 
 \begin{table}[H]
 \centering
@@ -176,12 +176,12 @@ At a high level, \textit{ROBOT NAME} consists of several independent subsystems:
 \toprule
 \textbf{Subsystem} & \textbf{Description} \\
 \midrule
-Chassis          & TODO: Material, dimensions, design philosophy \\
-Drivetrain       & Differential drive with 2$\times$ REV SparkMAX controllers and NEO/550 motors \\
-Compute          & TODO: Intel NUC / Jetson / Raspberry Pi \\
+Chassis          & AndyMark Raptor Track Drive with 80/20 T-slot aluminum extrusion frame and 1/8\,in diamond plate steel base (21.5\,in $\times$ 30\,in) \\
+Drivetrain       & Tracked differential drive (skid-steer) with 2$\times$ REV SparkMAX controllers and NEO brushless motors \\
+Compute          & NVIDIA Jetson Orin (GPU) for vision processing and object detection \\
 Microcontroller  & Teensy 4.1 --- CAN bridge between main computer and motor controllers \\
-Sensors          & TODO: Camera(s), GPS/IMU, ultrasonics/LiDAR \\
-Power            & TODO: Battery type, voltage, capacity \\
+Sensors          & TODO: Camera(s), GPS/IMU, motion sensors \\
+Power            & 48\,V battery with dual buck converters (12\,V/20\,A for motors, 5\,V/6\,A for Teensy 4.1) \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -211,8 +211,8 @@ The software is split into four major subsystems: sensors, perception, localizat
 
 \begin{itemize}[nosep]
     \item \textbf{Sensors} --- Camera capture, GPS/IMU reading, motor encoder feedback
-    \item \textbf{Perception} --- Image processing, obstacle detection, lane detection
-    \item \textbf{Localization} --- Sensor fusion (wheel odometry + GPS) for position estimation
+    \item \textbf{Perception} --- GPU-accelerated image processing, obstacle detection, lane detection (Jetson Orin)
+    \item \textbf{Localization} --- Sensor fusion (track odometry + GPS) for position estimation
     \item \textbf{Navigation} --- Path planning and motor command generation
 \end{itemize}
 
@@ -242,13 +242,16 @@ The total cost to construct \textit{ROBOT NAME} was approximately \$X,XXX.
 \toprule
 \textbf{Major COTS Item} & \textbf{Qty} & \textbf{Market Cost (USD)} & \textbf{Team Cost (USD)} \\
 \midrule
-TODO: Main Computer             & 1 & \$XXX.00 & \$XXX.00 \\
-TODO: Camera(s)                 & 1 & \$XXX.00 & \$XXX.00 \\
-TODO: Battery                   & 1 & \$XX.00  & \$XX.00 \\
-TODO: GPS/IMU                   & 1 & \$X,XXX.00 & \$XXX.00 \\
-REV SparkMAX + NEO Motor        & 2 & \$XXX.00 & \$XXX.00 \\
+NVIDIA Jetson Orin               & 1 & \$TODO & \$TODO \\
+TODO: Camera(s)                 & TODO & \$TODO & \$TODO \\
+48\,V Battery                   & 1 & \$TODO  & \$TODO \\
+TODO: GPS/IMU                   & 1 & \$TODO & \$TODO \\
+AndyMark Raptor Track Drive     & 1 & \$TODO & \$TODO \\
+REV SparkMAX + NEO Motor        & 2 & \$TODO & \$TODO \\
 Teensy 4.1                      & 1 & \$30.00  & \$30.00 \\
 CAN Transceiver (SN65HVD230)    & 1 & \$5.00   & \$5.00 \\
+Buck Converters (12\,V + 5\,V)  & 2 & \$TODO   & \$TODO \\
+Router                          & 1 & \$TODO   & \$TODO \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -260,17 +263,19 @@ CAN Transceiver (SN65HVD230)    & 1 & \$5.00   & \$5.00 \\
 % =============================================================================
 \section{Effective Innovations}
 
-\subsection{Innovation 1: TODO}
+\subsection{Innovation 1: Cost-Effective Tracked Platform with Modular Frame}
 
-% Describe what makes your drivetrain approach unique or well-suited for the competition.
+As first-year participants, the team made the strategic decision to build on a commercially available AndyMark Raptor Track Drive platform combined with 80/20 T-slot aluminum extrusions. This approach provides several advantages over a fully custom chassis:
 
-TODO: Describe your team's primary mechanical or drivetrain innovation.
+\begin{itemize}[nosep]
+    \item \textbf{Reduced development time} --- By using a proven tracked drive platform, the team could focus development effort on sensors, electronics, and software rather than chassis fabrication.
+    \item \textbf{Superior traction} --- The tank-track configuration spreads the vehicle's weight over a larger contact area compared to wheels, providing better traction and stability on uneven terrain and the competition ramp.
+    \item \textbf{Modular reconfigurability} --- The T-slot extrusion frame allows components to be repositioned or swapped without permanent modifications, enabling rapid iteration during development and easy adaptation for future competitions.
+\end{itemize}
 
-\subsection{Innovation 2: TODO}
+\subsection{Innovation 2: GPU-Accelerated Vision with Jetson Orin}
 
-% Describe your key software or sensor innovation.
-
-TODO: Describe your team's primary software or perception innovation.
+The team selected the NVIDIA Jetson Orin as the main onboard computer, leveraging its GPU capabilities for computationally intensive vision processing and object detection. Unlike CPU-only solutions, the Jetson Orin enables real-time image processing pipelines that would otherwise introduce unacceptable latency. This allows the vehicle to run advanced perception algorithms while maintaining the responsiveness required for safe autonomous navigation.
 
 \subsection{Custom CAN Firmware for SparkMAX Control}
 
@@ -292,18 +297,30 @@ The team developed custom firmware for the Teensy 4.1 microcontroller that commu
 
 \subsection{Overview}
 
-The mechanical design of \textit{ROBOT NAME} is focused on simplicity, reliability, ease of access to electronics, weatherproofing, and modularity. The vehicle uses a differential drive configuration with two independently driven wheels and one or two passive caster wheel(s) for stability.
+As first-year participants, the team prioritized a simple, modular, and cost-effective mechanical design. This approach allowed the team to concentrate its budget toward sensors and electronics critical for autonomous navigation. The vehicle is built on a commercially available tracked drive platform from AndyMark\textsuperscript{\textregistered}, the Raptor Track Drive. This track-based structure provides a reliable and robust base for mobility. For design flexibility, T-slot aluminum extrusions were mounted directly to the chassis, enabling rapid prototyping and testing of different structural configurations throughout the development process.
 
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[width=0.6\textwidth]{figures/mechanical_overview.png}
-%     \caption{Mechanical overview of \textit{ROBOT NAME}.}
-%     \label{fig:mech_overview}
-% \end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.45\textwidth]{figures/mech_image1.png}
+    \hfill
+    \includegraphics[width=0.45\textwidth]{figures/mech_image2.png}
+    \caption{CAD renders of \textit{ROBOT NAME}: front view (left) and rear view (right).}
+    \label{fig:mech_overview}
+\end{figure}
 
 \subsection{Drivetrain}
 
-\textit{ROBOT NAME} features a differential drive system powered by two REV SparkMAX motor controllers, each driving a REV NEO brushless motor. The differential drive configuration was chosen for its simplicity, reliability, and proven performance in outdoor environments.
+\textit{ROBOT NAME} utilizes a tracked differential drive system powered by two REV NEO brushless motors, each controlled by a REV SparkMAX motor controller. This configuration was chosen for both its mechanical and computational simplicity, as well as traction performance in outdoor environments.
+
+The fixed belt-tracked system allows for skid-steer operation where each motor drives one side of the track independently. Straight motion is achieved when both motors rotate at the same speed in the same direction, while turning is accomplished by varying the relative speeds of each motor:
+
+\begin{itemize}[nosep]
+    \item \textbf{Pivot Turn} --- One track moves forward while the other stays still; the robot pivots around the stationary track.
+    \item \textbf{In-Place Rotation (Spin)} --- The tracks rotate in opposite directions at the same speed ($v_L = -v_R$); the robot rotates around its center point.
+    \item \textbf{Gradual Curve} --- One track rotates faster than the other ($v_L > v_R$ to turn right).
+\end{itemize}
+
+This approach eliminates the need for four independent motors or steering mechanisms, reducing system complexity in both mechanical design and control software. Using the track belts instead of regular wheels, the weight of \textit{ROBOT NAME} is spread over a larger area, increasing traction and stability across uneven terrain and obstacles encountered on the course.
 
 \begin{table}[H]
 \centering
@@ -312,29 +329,32 @@ The mechanical design of \textit{ROBOT NAME} is focused on simplicity, reliabili
 \toprule
 \textbf{Parameter} & \textbf{Value} \\
 \midrule
-Drive type           & Differential \\
-Motors               & 2$\times$ REV NEO \\
+Drive type           & Tracked differential (skid-steer) \\
+Drive platform       & AndyMark Raptor Track Drive \\
+Motors               & 2$\times$ REV NEO brushless \\
 Motor controllers    & 2$\times$ REV SparkMAX \\
 Gear ratio           & TODO \\
-Wheel diameter       & TODO \\
-Wheel type           & TODO \\
 Designed top speed   & TODO \\
 Track width          & TODO \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-Each motor is connected to its wheel through a gearbox/belt/chain drive. The gear ratio was selected so that the peak of the motor power curve falls at typical IGVC operating speeds.
-
 \subsection{Frame and Sensor Mast}
 
-The frame is constructed from TODO: material (e.g., 80/20 aluminum extrusion, welded aluminum, steel tube). A deliberate effort was made to design for ease of access to internal electronics and for modularity so that subsystems can be quickly swapped or repaired.
+The structural frame was constructed using 80/20\textsuperscript{\textregistered} 20-Series T-slot aluminum extrusions (80/20 Inc., USA). These extrusions allow for a modular and reconfigurable design that can be adapted for future competitions. To improve safety during assembly and operation, T-slot nuts were utilized within the extrusion channels, eliminating exposed threaded ends and reducing the risk of sharp edges. Attached to the base chassis is a 1/8\,in thick diamond plate steel base (21.5\,in $\times$ 30\,in), offering a rigid and large mounting surface for heavy components.
+
+Weight distribution was a prioritized design consideration. The battery pack was mounted toward the rear of the chassis to act as a counterbalance to the 20\,lb payload, which was positioned toward the front of the vehicle on a 3D-printed mount. Electronics were centrally located and mounted on 3D-printed brackets attached to a carbon fiber plate, preventing direct contact with the steel base and protecting sensors and components from electrical interference.
 
 A sensor mast is mounted at the center/front of the robot to elevate the camera(s) and GPS antenna. Maximizing the height of the cameras provides a wider field of view and allows the image to be projected onto a 2D plane with minimal distortion.
 
 \subsection{Weatherproofing}
 
-\textit{ROBOT NAME} features acrylic panels / polycarbonate enclosure for protection from rain and sun. Weatherstripping and gaskets protect sensitive electronic components. All cable pass-throughs are sealed to prevent water ingress.
+\textit{ROBOT NAME} utilizes acrylic panel walls integrated into the T-slot frame for protection from rain and sun. The acrylic sheets are cut-to-fit inside the T-slot extrusion grooves, with weatherstripping gaskets filling the gaps to ensure a secure fit that remains in place even with vibration during operation. The top panel is angled for water runoff and includes a sliding door for maintenance, wiring, and payload handling. All cable pass-throughs are sealed to prevent water ingress.
+
+\subsection{Constraints}
+
+To satisfy the competition size requirements, \textit{ROBOT NAME} was extended through the addition of an 8$\times$6\,in rear-mounted enclosure for the mechanical E-stop button, extending the length of the vehicle over the minimum 3\,ft required. This structure was mounted at 2\,ft from the ground, and the E-stop button was centrally positioned for easy access.
 
 \newpage
 
@@ -343,29 +363,37 @@ A sensor mast is mounted at the center/front of the robot to elevate the camera(
 % =============================================================================
 \section{Electronic and Power Design}
 
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[width=0.95\textwidth]{figures/electrical_diagram.png}
-%     \caption{Electronic and power architecture of \textit{ROBOT NAME}.}
-%     \label{fig:elec_arch}
-% \end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{figures/electrical_p1_img1.png}
+    \caption{Electronic and power architecture of \textit{ROBOT NAME}.}
+    \label{fig:elec_arch}
+\end{figure}
 
 \subsection{Overview}
 
 The electronic system of \textit{ROBOT NAME} is designed for modularity and repairability. The architecture features the following key components:
 
 \begin{itemize}[nosep]
-    \item \textbf{Main computer} --- TODO: describe
+    \item \textbf{NVIDIA Jetson Orin} --- Main onboard GPU computer for vision processing and object detection
     \item \textbf{Teensy 4.1} --- CAN bridge handling motor control and encoder feedback
     \item \textbf{CAN transceiver} --- SN65HVD230 converting logic-level to differential CAN
     \item \textbf{2$\times$ REV SparkMAX} --- Brushless motor controllers with built-in PID
+    \item \textbf{Router} --- Central network hub connecting Jetson Orin and Teensy 4.1 via Ethernet, with Wi-Fi to remote laptop
     \item \textbf{E-stop system} --- Hardware relay controlled by physical + wireless + software interlocks
     \item \textbf{Safety lights} --- TODO: RGB LED strip / indicator lights
 \end{itemize}
 
 \subsection{Power Distribution}
 
-The vehicle uses a TODO: 12V XXAh battery to power both the electronics and the drivetrain.
+The power system consists of a 48\,V battery wired to two separate buck converters. The first buck converter brings the voltage down to 12\,V with a maximum output of 20\,A, which provides sufficient current to the 12\,V motors via the SparkMAX controllers. The second buck converter brings the voltage down to 5\,V with a maximum output of 6\,A, which is used to power the Teensy 4.1 microcontroller. Both buck converters run through multiple fuses before reaching their respective devices, providing overcurrent protection throughout the power distribution system.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{figures/electrical_p1_img2.png}
+    \caption{Power distribution topology: 48\,V battery to dual buck converters with fused outputs.}
+    \label{fig:power_dist}
+\end{figure}
 
 \begin{table}[H]
 \centering
@@ -374,9 +402,9 @@ The vehicle uses a TODO: 12V XXAh battery to power both the electronics and the 
 \toprule
 \textbf{Component} & \textbf{Voltage (V)} & \textbf{Peak Current (A)} & \textbf{Avg Current (A)} \\
 \midrule
-Main computer       & TODO & TODO & TODO \\
-Teensy 4.1          & 5 (via USB) & 0.1 & 0.05 \\
-SparkMAX + motors   & 12 & TODO & TODO \\
+Jetson Orin         & 5--20 (via buck) & TODO & TODO \\
+Teensy 4.1          & 5 (via 5\,V/6\,A buck) & 0.1 & 0.05 \\
+SparkMAX + motors   & 12 (via 12\,V/20\,A buck) & TODO & TODO \\
 Sensors / cameras   & TODO & TODO & TODO \\
 Safety lights       & TODO & TODO & TODO \\
 \midrule
@@ -385,9 +413,20 @@ Safety lights       & TODO & TODO & TODO \\
 \end{tabularx}
 \end{table}
 
+\subsection{Computer Network}
+
+The computer network is centered around a router that connects both the NVIDIA Jetson Orin and the Teensy 4.1 microcontroller via Ethernet. The Jetson Orin is used for computationally intensive tasks such as vision processing and object detection, while the Teensy 4.1 handles system data including motor control and sensor feedback over CAN bus. The router also transmits system data to a remote laptop via Wi-Fi, enabling real-time monitoring and debugging during operation.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{figures/electrical_p2_img1.jpeg}
+    \caption{Computer network topology.}
+    \label{fig:network}
+\end{figure}
+
 \subsection{Motor Control}
 
-\textit{ROBOT NAME} controls its two drive motors by commanding the SparkMAX controllers over a dedicated CAN bus. The Teensy 4.1 serves as the CAN bridge, translating high-level commands from the main computer (received over USB Serial) into SparkMAX CAN frames.
+\textit{ROBOT NAME} controls its two drive motors by commanding the SparkMAX controllers over a dedicated CAN bus. The Teensy 4.1 serves as the CAN bridge, translating high-level commands from the main computer (received over Ethernet via the onboard router) into SparkMAX CAN frames. Using the data received from the SparkMAX controllers, the system implements PID control to maintain correct speeds and position.
 
 The SparkMAX controllers use REV Robotics' proprietary CAN protocol with 29-bit extended identifiers. The CAN ID is structured as follows:
 
@@ -494,25 +533,25 @@ Autonomous localization is required for qualifying for and completing the IGVC A
 
 \textit{ROBOT NAME} uses a particle filter / extended Kalman filter that combines:
 \begin{itemize}[nosep]
-    \item \textbf{Wheel odometry} --- Encoder feedback from the SparkMAX motor controllers, transmitted through the Teensy 4.1 over CAN bus.
+    \item \textbf{Track odometry} --- Encoder feedback from the SparkMAX motor controllers, transmitted through the Teensy 4.1 over CAN bus.
     \item \textbf{GPS data} --- TODO: GPS module name and accuracy specifications.
-    \item \textbf{IMU data} --- TODO: IMU name providing heading and angular velocity.
+    \item \textbf{IMU data} --- TODO: IMU name providing heading and angular velocity (motion sensors connected to Teensy 4.1).
 \end{itemize}
 
 This fused location data is consumed by the path planner as the robot's current position and is used to determine waypoint arrival and distance from the start of the course.
 
 \subsection{Drive Control}
 
-The main computer publishes desired linear and angular velocity commands. These are converted to individual left/right wheel speeds using the differential drive kinematic model:
+The Jetson Orin publishes desired linear and angular velocity commands. These are converted to individual left/right track speeds using the differential drive kinematic model:
 
 \begin{align}
     v_L &= v - \frac{\omega \cdot d}{2} \\
     v_R &= v + \frac{\omega \cdot d}{2}
 \end{align}
 
-where $v$ is the desired linear velocity, $\omega$ is the desired angular velocity, and $d$ is the track width (distance between wheel centers).
+where $v$ is the desired linear velocity, $\omega$ is the desired angular velocity, and $d$ is the track width (distance between track centers).
 
-The computed wheel speeds are sent to the Teensy 4.1 over USB Serial, which translates them into SparkMAX CAN commands. Encoder feedback from both motors is read by the Teensy and sent back to the main computer for odometry computation.
+The computed track speeds are sent to the Teensy 4.1 over Ethernet (via the onboard router), which translates them into SparkMAX CAN commands. Encoder feedback from both motors is read by the Teensy and sent back to the Jetson Orin for odometry computation.
 
 \subsection{Configuration and GUI}
 

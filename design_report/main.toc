@@ -1,0 +1,49 @@
+\contentsline {section}{\numberline {1}Design Process, Team Identification and Organization}{3}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Introduction}{3}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}Team Organization}{3}{subsection.1.2}%
+\contentsline {subsection}{\numberline {1.3}Design Process}{3}{subsection.1.3}%
+\contentsline {section}{\numberline {2}System Architecture}{5}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Mechanical and Electrical Architecture}{5}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Robot Safety}{5}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Software Architecture}{6}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}Robot Communication Bus}{6}{subsection.2.4}%
+\contentsline {subsection}{\numberline {2.5}Bill of Materials}{6}{subsection.2.5}%
+\contentsline {section}{\numberline {3}Effective Innovations}{8}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Innovation 1: Cost-Effective Tracked Platform with Modular Frame}{8}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Innovation 2: GPU-Accelerated Vision with Jetson Orin}{8}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Custom CAN Firmware for SparkMAX Control}{8}{subsection.3.3}%
+\contentsline {section}{\numberline {4}Mechanical Design}{9}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Overview}{9}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Drivetrain}{9}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Frame and Sensor Mast}{10}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Weatherproofing}{10}{subsection.4.4}%
+\contentsline {subsection}{\numberline {4.5}Constraints}{11}{subsection.4.5}%
+\contentsline {section}{\numberline {5}Electronic and Power Design}{12}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Overview}{12}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Power Distribution}{12}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Computer Network}{13}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}Motor Control}{14}{subsection.5.4}%
+\contentsline {subsection}{\numberline {5.5}Safety Lights}{15}{subsection.5.5}%
+\contentsline {subsection}{\numberline {5.6}Emergency Stop and Safety}{15}{subsection.5.6}%
+\contentsline {section}{\numberline {6}Software Systems}{16}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Overview}{16}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Image Transformation}{16}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Navigation}{16}{subsection.6.3}%
+\contentsline {subsection}{\numberline {6.4}Localization}{16}{subsection.6.4}%
+\contentsline {subsection}{\numberline {6.5}Drive Control}{17}{subsection.6.5}%
+\contentsline {subsection}{\numberline {6.6}Configuration and GUI}{17}{subsection.6.6}%
+\contentsline {subsection}{\numberline {6.7}State Machine}{17}{subsection.6.7}%
+\contentsline {subsection}{\numberline {6.8}Logging}{17}{subsection.6.8}%
+\contentsline {section}{\numberline {7}Cyber Security Analysis}{18}{section.7}%
+\contentsline {subsection}{\numberline {7.1}NIST RMF Process}{18}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}Vehicle Threats}{18}{subsection.7.2}%
+\contentsline {subsection}{\numberline {7.3}Cyber Controls and Implementation}{19}{subsection.7.3}%
+\contentsline {section}{\numberline {8}Vehicle Analysis}{20}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Lessons Learned}{20}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Failure Points and Resolutions}{20}{subsection.8.2}%
+\contentsline {subsection}{\numberline {8.3}Safety, Reliability, and Durability}{20}{subsection.8.3}%
+\contentsline {subsection}{\numberline {8.4}Performance Metrics}{21}{subsection.8.4}%
+\contentsline {subsection}{\numberline {8.5}Software Testing, Bug Tracking, and Version Control}{21}{subsection.8.5}%
+\contentsline {subsection}{\numberline {8.6}Simulation}{21}{subsection.8.6}%
+\contentsline {section}{\numberline {9}Unique AutoNav and Self Drive Software}{22}{section.9}%
+\contentsline {section}{\numberline {10}Performance Assessment}{23}{section.10}%
