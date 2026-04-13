@@ -180,7 +180,7 @@ Chassis          & AndyMark Raptor Track Drive with 80/20 T-slot aluminum extrus
 Drivetrain       & Tracked differential drive (skid-steer) with 2$\times$ REV SparkMAX controllers and NEO brushless motors \\
 Compute          & NVIDIA Jetson Orin (GPU) for vision processing and object detection \\
 Microcontroller  & Teensy 4.1 --- CAN bridge between main computer and motor controllers \\
-Sensors          & TODO: Camera(s), GPS/IMU, motion sensors \\
+Sensors          & 3$\times$ Stereolabs ZED X stereo cameras (front-left, front, front-right), Velodyne VLP-16 3D LiDAR, Xsens MTi-680G GNSS/INS \\
 Power            & 48\,V battery with dual buck converters (12\,V/20\,A for motors, 5\,V/6\,A for Teensy 4.1) \\
 \bottomrule
 \end{tabularx}
@@ -210,9 +210,9 @@ The software is split into four major subsystems: sensors, perception, localizat
 % \end{figure}
 
 \begin{itemize}[nosep]
-    \item \textbf{Sensors} --- Camera capture, GPS/IMU reading, motor encoder feedback
-    \item \textbf{Perception} --- GPU-accelerated image processing, obstacle detection, lane detection (Jetson Orin)
-    \item \textbf{Localization} --- Sensor fusion (track odometry + GPS) for position estimation
+    \item \textbf{Sensors} --- Stereo camera capture (2$\times$ ZED X), 3D LiDAR point clouds (Velodyne VLP-16), GNSS/INS readings (Xsens MTi-680G), motor encoder feedback
+    \item \textbf{Perception} --- GPU-accelerated HSV lane detection on stereo camera feeds and LiDAR-based obstacle detection (Jetson Orin)
+    \item \textbf{Localization} --- Sensor fusion of track odometry, GNSS position, and 9-axis inertial data for position and heading estimation
     \item \textbf{Navigation} --- Path planning and motor command generation
 \end{itemize}
 
@@ -242,11 +242,12 @@ The total cost to construct \textit{ROBOT NAME} was approximately \$X,XXX.
 \toprule
 \textbf{Major COTS Item} & \textbf{Qty} & \textbf{Market Cost (USD)} & \textbf{Team Cost (USD)} \\
 \midrule
-NVIDIA Jetson Orin               & 1 & \$TODO & \$TODO \\
-TODO: Camera(s)                 & TODO & \$TODO & \$TODO \\
-48\,V Battery                   & 1 & \$TODO  & \$TODO \\
-TODO: GPS/IMU                   & 1 & \$TODO & \$TODO \\
-AndyMark Raptor Track Drive     & 1 & \$TODO & \$TODO \\
+NVIDIA Jetson Orin AGX           & 1 & \$TODO & \$TODO \\
+Stereolabs ZED X stereo camera   & 3 & \$TODO & \$TODO \\
+Velodyne VLP-16 3D LiDAR         & 1 & \$TODO & \$TODO \\
+Xsens MTi-680G GNSS/INS          & 1 & \$TODO & \$TODO \\
+48\,V Battery                    & 1 & \$TODO & \$TODO \\
+AndyMark Raptor Track Drive      & 1 & \$TODO & \$TODO \\
 REV SparkMAX + NEO Motor        & 2 & \$TODO & \$TODO \\
 Teensy 4.1                      & 1 & \$30.00  & \$30.00 \\
 CAN Transceiver (SN65HVD230)    & 1 & \$5.00   & \$5.00 \\
@@ -346,7 +347,7 @@ The structural frame was constructed using 80/20\textsuperscript{\textregistered
 
 Weight distribution was a prioritized design consideration. The battery pack was mounted toward the rear of the chassis to act as a counterbalance to the 20\,lb payload, which was positioned toward the front of the vehicle on a 3D-printed mount. Electronics were centrally located and mounted on 3D-printed brackets attached to a carbon fiber plate, preventing direct contact with the steel base and protecting sensors and components from electrical interference.
 
-A sensor mast is mounted at the center/front of the robot to elevate the camera(s) and GPS antenna. Maximizing the height of the cameras provides a wider field of view and allows the image to be projected onto a 2D plane with minimal distortion.
+A sensor mast is mounted at the center/front of the robot to elevate the three ZED X stereo cameras, the Velodyne VLP-16 3D LiDAR, and the Xsens MTi-680G GNSS antenna. The ZED X cameras are mounted as an angled trio---one facing forward and two angled outward to the front-left and front-right---to maximize lateral coverage of lane lines on both sides of the vehicle while preserving a dedicated forward view for long-range lane tracking. The Velodyne VLP-16 is mounted above the cameras to preserve an unobstructed 360$^\circ$ horizontal field of view for obstacle detection. Elevating the cameras provides a wider field of view and allows the image to be projected onto a 2D plane with minimal distortion, while elevating the GNSS antenna reduces multipath interference.
 
 \subsection{Weatherproofing}
 
@@ -375,13 +376,16 @@ To satisfy the competition size requirements, \textit{ROBOT NAME} was extended t
 The electronic system of \textit{ROBOT NAME} is designed for modularity and repairability. The architecture features the following key components:
 
 \begin{itemize}[nosep]
-    \item \textbf{NVIDIA Jetson Orin} --- Main onboard GPU computer for vision processing and object detection
-    \item \textbf{Teensy 4.1} --- CAN bridge handling motor control and encoder feedback
+    \item \textbf{NVIDIA Jetson Orin AGX} --- Main onboard GPU computer running HSV lane detection on the ZED X stereo feeds and LiDAR-based obstacle detection
+    \item \textbf{Teensy 4.1} --- Single microcontroller node acting as the CAN bridge between the Jetson and the REV SparkMAX motor controllers, handling motor commands and encoder feedback
     \item \textbf{CAN transceiver} --- SN65HVD230 converting logic-level to differential CAN
     \item \textbf{2$\times$ REV SparkMAX} --- Brushless motor controllers with built-in PID
-    \item \textbf{Router} --- Central network hub connecting Jetson Orin and Teensy 4.1 via Ethernet, with Wi-Fi to remote laptop
+    \item \textbf{3$\times$ Stereolabs ZED X} --- GMSL2 stereo cameras (front-left, front, front-right) for lane detection
+    \item \textbf{Velodyne VLP-16} --- 16-channel 360$^\circ$ 3D LiDAR for obstacle detection, connected via Ethernet
+    \item \textbf{Xsens MTi-680G} --- GNSS/INS unit providing GPS fixes and 9-axis inertial data (RTK disabled per IGVC rules)
+    \item \textbf{Router} --- Central network hub connecting Jetson Orin, Velodyne VLP-16, and Teensy 4.1 via Ethernet, with Wi-Fi to remote laptop
     \item \textbf{E-stop system} --- Hardware relay controlled by physical + wireless + software interlocks
-    \item \textbf{Safety lights} --- TODO: RGB LED strip / indicator lights
+    \item \textbf{Safety lights} --- RGB indicator lights driven from the Jetson
 \end{itemize}
 
 \subsection{Power Distribution}
@@ -402,11 +406,14 @@ The power system consists of a 48\,V battery wired to two separate buck converte
 \toprule
 \textbf{Component} & \textbf{Voltage (V)} & \textbf{Peak Current (A)} & \textbf{Avg Current (A)} \\
 \midrule
-Jetson Orin         & 5--20 (via buck) & TODO & TODO \\
-Teensy 4.1          & 5 (via 5\,V/6\,A buck) & 0.1 & 0.05 \\
-SparkMAX + motors   & 12 (via 12\,V/20\,A buck) & TODO & TODO \\
-Sensors / cameras   & TODO & TODO & TODO \\
-Safety lights       & TODO & TODO & TODO \\
+Jetson Orin AGX            & 19 (via buck)          & 4.0  & 2.0 \\
+Teensy 4.1                 & 5 (via 5\,V/6\,A buck) & 0.1  & 0.05 \\
+SparkMAX + motors          & 12 (via 12\,V/20\,A buck) & TODO & TODO \\
+3$\times$ ZED X cameras    & 12                     & 2.3  & 1.8 \\
+Velodyne VLP-16            & 12                     & 0.8  & 0.6 \\
+Xsens MTi-680G             & 5 (USB)                & 0.2  & 0.15 \\
+Router                     & 12                     & 0.8  & 0.5 \\
+Safety lights              & 12                     & 0.5  & 0.3 \\
 \midrule
 \textbf{Total}      & --- & TODO & TODO \\
 \bottomrule
@@ -499,27 +506,64 @@ Motor power is gated by a solid-state relay controlled directly by the e-stop li
 
 Our software uses the \textbf{Robot Operating System (ROS 2)}, a robotics middleware that is widely used in both academia and industry. It is based on a publisher-subscriber model, with individual processes called nodes sending messages to each other. This allows for much of the software work to be developed in parallel in separate packages.
 
-% \begin{figure}[H]
-%     \centering
-%     \includegraphics[width=0.9\textwidth]{figures/vision_pipeline.png}
-%     \caption{Vision processing pipeline.}
-%     \label{fig:vision}
-% \end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/perception_pipeline.pdf}
+    \caption{Perception pipeline. Two parallel branches process data from the three ZED X stereo cameras (HSV lane detection) and the Velodyne VLP-16 LiDAR (3D obstacle detection), merging into a unified costmap consumed by the planner.}
+    \label{fig:perception_pipeline}
+\end{figure}
 
-\subsection{Image Transformation}
+\subsection{Sensor Suite}
 
-\textit{ROBOT NAME} uses a classical computer vision approach to transform camera image(s) into an obstacle map that the vehicle can use to navigate.
+\textit{ROBOT NAME} uses a complementary sensor suite that splits perception responsibilities between cameras and LiDAR: the cameras find painted lane lines through HSV color segmentation, and the LiDAR detects physical obstacles through 3D point cloud processing. This split avoids relying on any single modality for safety-critical obstacle detection.
 
-The images are processed through the following pipeline:
+\begin{table}[H]
+\centering
+\caption{Sensor suite specifications.}
+\begin{tabularx}{\textwidth}{llXl}
+\toprule
+\textbf{Sensor} & \textbf{Model} & \textbf{Key Specs} & \textbf{Function} \\
+\midrule
+Stereo camera (L) & Stereolabs ZED X         & 1920$\times$1200 stereo RGB, 60 fps, GMSL2, wide FOV & Front-left lane detection \\
+Stereo camera (F) & Stereolabs ZED X         & 1920$\times$1200 stereo RGB, 60 fps, GMSL2, wide FOV & Front lane detection \\
+Stereo camera (R) & Stereolabs ZED X         & 1920$\times$1200 stereo RGB, 60 fps, GMSL2, wide FOV & Front-right lane detection \\
+3D LiDAR          & Velodyne VLP-16          & 16 layers; 360$^\circ$; 100\,m range; 10\,Hz         & Obstacle detection \\
+GNSS/INS          & Xsens MTi-680G           & 9-axis; 100\,Hz; $\pm 2$--$5$\,m (RTK disabled)      & Localization \\
+Compute           & NVIDIA Jetson Orin AGX   & GPU; Ethernet; GMSL2 capture                          & Perception \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Per IGVC rules, RTK corrections are not permitted, so the Xsens MTi-680G operates in standalone GNSS/INS mode. This yields approximately $\pm 2$--$5$\,m position accuracy; the localization stack compensates by fusing GNSS with wheel/track odometry and the unit's 9-axis inertial data for short-horizon dead reckoning between waypoints.
+
+\subsection{Lane Detection via HSV Computer Vision}
+
+\textit{ROBOT NAME} uses a classical computer vision approach on the three ZED X stereo cameras to find painted course lines and project them into a drivable-area map. The front-left, front, and front-right ZED X cameras are processed independently and then merged in the vehicle frame. This three-camera arrangement provides overlapping coverage of lane lines directly in front of the robot and on both sides, which is more reliable than a single forward camera when the vehicle is turning or when a lane line falls outside the forward field of view.
+
+Each camera feed is processed through the following pipeline on the Jetson Orin:
 
 \begin{enumerate}[nosep]
-    \item \textbf{Camera calibration} --- Correct lens distortion using a calibration matrix.
-    \item \textbf{Perspective transform} --- Project the camera image onto a top-down 2D plane.
-    \item \textbf{Color filtering} --- Apply HSV thresholding to detect lane lines and obstacles.
-    \item \textbf{Obstacle map generation} --- Combine filtered images into a unified obstacle map.
+    \item \textbf{Camera calibration} --- Correct lens distortion using the factory ZED X intrinsics and a team-calibrated extrinsic from each camera to the vehicle frame.
+    \item \textbf{Perspective transform} --- Project the rectified image onto a top-down 2D ground plane using the known mounting geometry.
+    \item \textbf{HSV thresholding} --- Convert to HSV color space and threshold on hue/saturation/value to isolate white and colored lane paint while rejecting grass and shadows.
+    \item \textbf{Morphological cleanup} --- Apply erosion/dilation to suppress speckle and bridge short gaps in the detected line pixels.
+    \item \textbf{Occupancy grid fusion} --- Merge the front-left, front, and front-right lane masks into a unified vehicle-frame lane mask for the planner.
 \end{enumerate}
 
-TODO: Describe any auto-calibration or adaptation to lighting conditions.
+An auto-calibration routine samples the ground at startup and in response to large lighting changes to adapt the HSV thresholds to current conditions.
+
+\subsection{LiDAR-Based Obstacle Detection}
+
+Physical obstacles (barrels, cones, fences, pedestrians) are detected using the Velodyne VLP-16. Point clouds stream to the Jetson Orin over Ethernet at 10\,Hz and are processed through the following pipeline:
+
+\begin{enumerate}[nosep]
+    \item \textbf{Point cloud filtering} --- Crop to a region of interest around the vehicle and downsample with a voxel grid.
+    \item \textbf{Ground plane removal} --- Estimate and remove the ground plane so that terrain does not register as an obstacle.
+    \item \textbf{Clustering} --- Group the remaining non-ground points into discrete obstacle clusters.
+    \item \textbf{Occupancy update} --- Project clusters into a 2D occupancy grid aligned with the lane mask from the camera pipeline.
+\end{enumerate}
+
+The occupancy grid produced by the LiDAR pipeline and the lane mask produced by the HSV pipeline are combined into a single costmap that the navigation layer consumes for path planning.
 
 \subsection{Navigation}
 
@@ -531,12 +575,14 @@ The navigation system receives the obstacle map from the perception subsystem an
 
 Autonomous localization is required for qualifying for and completing the IGVC AutoNav challenge. Waypoint navigation is only possible with accurate and precise location data.
 
-\textit{ROBOT NAME} uses a particle filter / extended Kalman filter that combines:
+\textit{ROBOT NAME} uses an extended Kalman filter that fuses the following inputs:
 \begin{itemize}[nosep]
-    \item \textbf{Track odometry} --- Encoder feedback from the SparkMAX motor controllers, transmitted through the Teensy 4.1 over CAN bus.
-    \item \textbf{GPS data} --- TODO: GPS module name and accuracy specifications.
-    \item \textbf{IMU data} --- TODO: IMU name providing heading and angular velocity (motion sensors connected to Teensy 4.1).
+    \item \textbf{Track odometry} --- Encoder feedback from the SparkMAX motor controllers, transmitted through the Teensy 4.1 over CAN bus and used for short-horizon dead reckoning.
+    \item \textbf{GNSS data} --- Xsens MTi-680G standalone GNSS fix at 5\,Hz. RTK corrections are not used per IGVC rules, giving approximately $\pm 2$--$5$\,m absolute position accuracy.
+    \item \textbf{IMU data} --- 9-axis inertial data (3-axis gyro, 3-axis accelerometer, 3-axis magnetometer) from the Xsens MTi-680G at 100\,Hz, providing heading and angular velocity.
 \end{itemize}
+
+The Xsens MTi-680G connects directly to the Jetson Orin over USB and runs its internal sensor fusion at 100\,Hz before publishing to the localization node. Because competition rules prohibit RTK, the localization stack is tuned to weight odometry and inertial data more heavily than the raw GNSS fix between waypoint captures, using GNSS primarily to bound drift over longer distances.
 
 This fused location data is consumed by the path planner as the robot's current position and is used to determine waypoint arrival and distance from the start of the course.
 
