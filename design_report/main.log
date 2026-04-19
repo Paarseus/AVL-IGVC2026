@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.3.5)  6 APR 2026 10:45
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.2.17)  13 APR 2026 12:20
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -524,7 +524,7 @@ Package hyperref Info: Link coloring ON on input line 60.
 \@outlinefile=\write3
 \openout3 = `main.out'.
 
-<figures/mech_image1.png, id=200, 1286.55656pt x 932.73468pt>
+<figures/mech_image1.png, id=209, 1286.55656pt x 932.73468pt>
 File: figures/mech_image1.png Graphic file (type png)
 <use figures/mech_image1.png>
 Package pdftex.def Info: figures/mech_image1.png  used on input line 79.
@@ -555,7 +555,7 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.39 ... {7.2}Vehicle Threats}{15}{subsection.7.2}
+l.40 ...{7.1}NIST RMF Process}{21}{subsection.7.1}
                                                   % [1])
 \tf@toc=\write4
 \openout4 = `main.toc'.
@@ -599,7 +599,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
 
 [4]
-<figures/electrical_p1_img1.png, id=290, 797.98125pt x 461.47406pt>
+<figures/electrical_p1_img1.png, id=300, 797.98125pt x 461.47406pt>
 File: figures/electrical_p1_img1.png Graphic file (type png)
 <use figures/electrical_p1_img1.png>
 Package pdftex.def Info: figures/electrical_p1_img1.png  used on input line 167
@@ -615,10 +615,6 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
 
 [5 <./figures/electrical_p1_img1.png (PNG copy)>]
-Underfull \hbox (badness 10000) in paragraph at lines 256--256
-[]|\T1/cmr/m/n/12 CAN Transceiver
- []
-
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 14.49998pt, for example:
@@ -648,12 +644,12 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 [8]
 File: figures/mech_image1.png Graphic file (type png)
 <use figures/mech_image1.png>
-Package pdftex.def Info: figures/mech_image1.png  used on input line 304.
+Package pdftex.def Info: figures/mech_image1.png  used on input line 305.
 (pdftex.def)             Requested size: 211.38832pt x 153.25412pt.
-<figures/mech_image2.png, id=317, 1245.9047pt x 1011.78pt>
+<figures/mech_image2.png, id=327, 1245.9047pt x 1011.78pt>
 File: figures/mech_image2.png Graphic file (type png)
 <use figures/mech_image2.png>
-Package pdftex.def Info: figures/mech_image2.png  used on input line 306.
+Package pdftex.def Info: figures/mech_image2.png  used on input line 307.
 (pdftex.def)             Requested size: 211.38832pt x 171.66068pt.
 
 
@@ -685,7 +681,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 [11]
 File: figures/electrical_p1_img1.png Graphic file (type png)
 <use figures/electrical_p1_img1.png>
-Package pdftex.def Info: figures/electrical_p1_img1.png  used on input line 368
+Package pdftex.def Info: figures/electrical_p1_img1.png  used on input line 369
 .
 (pdftex.def)             Requested size: 446.26582pt x 258.07866pt.
 
@@ -698,18 +694,12 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
 
 [12]
-<figures/electrical_p1_img2.png, id=342, 440.39531pt x 368.1253pt>
+<figures/electrical_p1_img2.png, id=353, 440.39531pt x 368.1253pt>
 File: figures/electrical_p1_img2.png Graphic file (type png)
 <use figures/electrical_p1_img2.png>
-Package pdftex.def Info: figures/electrical_p1_img2.png  used on input line 393
+Package pdftex.def Info: figures/electrical_p1_img2.png  used on input line 397
 .
 (pdftex.def)             Requested size: 234.8775pt x 196.33002pt.
-<figures/electrical_p2_img1.jpeg, id=343, 499.11469pt x 219.06844pt>
-File: figures/electrical_p2_img1.jpeg Graphic file (type jpg)
-<use figures/electrical_p2_img1.jpeg>
-Package pdftex.def Info: figures/electrical_p2_img1.jpeg  used on input line 42
-2.
-(pdftex.def)             Requested size: 281.85587pt x 123.71371pt.
 
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
@@ -720,6 +710,13 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
 
 [13 <./figures/electrical_p1_img2.png (PNG copy)>]
+<figures/electrical_p2_img1.jpeg, id=360, 499.11469pt x 219.06844pt>
+File: figures/electrical_p2_img1.jpeg Graphic file (type jpg)
+<use figures/electrical_p2_img1.jpeg>
+Package pdftex.def Info: figures/electrical_p2_img1.jpeg  used on input line 42
+9.
+(pdftex.def)             Requested size: 281.85587pt x 123.71371pt.
+
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 14.49998pt, for example:
@@ -738,6 +735,13 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
 
 [15]
+<figures/perception_pipeline.pdf, id=375, 644.16257pt x 596.88193pt>
+File: figures/perception_pipeline.pdf Graphic file (type pdf)
+<use figures/perception_pipeline.pdf>
+Package pdftex.def Info: figures/perception_pipeline.pdf  used on input line 51
+1.
+(pdftex.def)             Requested size: 469.75502pt x 435.27391pt.
+
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 14.49998pt, for example:
@@ -746,7 +750,142 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 
 (fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
 
-[16]
+[16 <./figures/perception_pipeline.pdf>]
+Underfull \hbox (badness 10000) in paragraph at lines 534--534
+[]|\T1/cmr/bx/n/12 Key
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 534--534
+[]|\T1/cmr/m/n/12 1920$\OMS/cmsy/m/n/12 ^^B$\T1/cmr/m/n/12 1200
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 534--534
+\T1/cmr/m/n/12 stereo
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 534--534
+\T1/cmr/m/n/12 RGB,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 534--534
+\T1/cmr/m/n/12 60 fps,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 534--534
+\T1/cmr/m/n/12 GMSL2,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 534--534
+[]|\T1/cmr/m/n/12 1920$\OMS/cmsy/m/n/12 ^^B$\T1/cmr/m/n/12 1200
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 534--534
+\T1/cmr/m/n/12 stereo
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 534--534
+\T1/cmr/m/n/12 RGB,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 534--534
+\T1/cmr/m/n/12 60 fps,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 534--534
+\T1/cmr/m/n/12 GMSL2,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 534--534
+[]|\T1/cmr/m/n/12 1920$\OMS/cmsy/m/n/12 ^^B$\T1/cmr/m/n/12 1200
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 534--534
+\T1/cmr/m/n/12 stereo
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 534--534
+\T1/cmr/m/n/12 RGB,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 534--534
+\T1/cmr/m/n/12 60 fps,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 534--534
+\T1/cmr/m/n/12 GMSL2,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 534--534
+[]|\T1/cmr/m/n/12 16 lay-
+ []
+
+
+Underfull \hbox (badness 3849) in paragraph at lines 534--534
+\T1/cmr/m/n/12 ers; 360$[]$;
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 534--534
+\T1/cmr/m/n/12 100m
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 534--534
+\T1/cmr/m/n/12 range;
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 534--534
+[]|\T1/cmr/m/n/12 9-axis;
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 534--534
+\T1/cmr/m/n/12 100Hz;
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 534--534
+\OMS/cmsy/m/n/12 ^^F\OT1/cmr/m/n/12 2$\T1/cmr/m/n/12 --$\OT1/cmr/m/n/12 5$\T1/c
+mr/m/n/12 m
+ []
+
+
+Underfull \hbox (badness 1721) in paragraph at lines 534--534
+\T1/cmr/m/n/12 (RTK dis-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 534--534
+[]|\T1/cmr/m/n/12 GPU;
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 534--534
+\T1/cmr/m/n/12 Eth-er-net;
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 534--534
+\T1/cmr/m/n/12 GMSL2
+ []
+
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 14.49998pt, for example:
@@ -756,25 +895,6 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
 
 [17]
-Underfull \hbox (badness 7203) in paragraph at lines 613--613
-[]|\T1/cmr/m/n/12 Malicious in-ter-fer-ence could
- []
-
-
-Underfull \hbox (badness 4739) in paragraph at lines 613--613
-[]|\T1/cmr/m/n/12 CAN frame in-jec-tion could
- []
-
-
-Underfull \hbox (badness 3417) in paragraph at lines 637--637
-[]|\T1/cmr/m/n/12 Monitor for anoma-lous CAN
- []
-
-
-Underfull \hbox (badness 2600) in paragraph at lines 637--637
-[]|\T1/cmr/m/n/12 CM-5 Ac-cess Re-stric-tions for
- []
-
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 14.49998pt, for example:
@@ -793,30 +913,6 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
 
 [19]
-Underfull \hbox (badness 5260) in paragraph at lines 670--670
-[]|\T1/cmr/m/n/12 Remote goes out of
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 670--670
-[]|\T1/cmr/m/n/12 Heartbeat time-out
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 670--670
-[]|\T1/cmr/m/n/12 Changing weather /
- []
-
-
-Underfull \hbox (badness 1163) in paragraph at lines 670--670
-[]|\T1/cmr/m/n/12 Auto HSV cal-i-bra-tion
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 670--670
-[]|\T1/cmr/m/n/12 Watchdog mon-i-tors
- []
-
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 14.49998pt, for example:
@@ -826,6 +922,25 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
 
 [20]
+Underfull \hbox (badness 7203) in paragraph at lines 659--659
+[]|\T1/cmr/m/n/12 Malicious in-ter-fer-ence could
+ []
+
+
+Underfull \hbox (badness 4739) in paragraph at lines 659--659
+[]|\T1/cmr/m/n/12 CAN frame in-jec-tion could
+ []
+
+
+Underfull \hbox (badness 3417) in paragraph at lines 683--683
+[]|\T1/cmr/m/n/12 Monitor for anoma-lous CAN
+ []
+
+
+Underfull \hbox (badness 2600) in paragraph at lines 683--683
+[]|\T1/cmr/m/n/12 CM-5 Ac-cess Re-stric-tions for
+ []
+
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 14.49998pt, for example:
@@ -844,6 +959,30 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
 
 [22]
+Underfull \hbox (badness 5260) in paragraph at lines 716--716
+[]|\T1/cmr/m/n/12 Remote goes out of
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 716--716
+[]|\T1/cmr/m/n/12 Heartbeat time-out
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 716--716
+[]|\T1/cmr/m/n/12 Changing weather /
+ []
+
+
+Underfull \hbox (badness 1163) in paragraph at lines 716--716
+[]|\T1/cmr/m/n/12 Auto HSV cal-i-bra-tion
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 716--716
+[]|\T1/cmr/m/n/12 Watchdog mon-i-tors
+ []
+
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 14.49998pt, for example:
@@ -852,43 +991,73 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 
 (fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
 
-[23] (./main.aux)
+[23]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+[24]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+[25]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 14.49998pt, for example:
+(fancyhdr)                \setlength{\headheight}{14.49998pt}.
+(fancyhdr)                You might also make \topmargin smaller to compensate:
+
+(fancyhdr)                \addtolength{\topmargin}{-2.49998pt}.
+
+[26] (./main.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
  ***********
-
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 53B5BA5C2E03C5C20D8824E0367D2709;8189.
+(rerunfilecheck)             Checksum: 8A6B4FA592EFA4B623720E21F2A73634;8627.
  ) 
 Here is how much of TeX's memory you used:
- 14181 strings out of 476106
- 219893 string characters out of 5793934
+ 14203 strings out of 476182
+ 220358 string characters out of 5795595
  1939975 words of memory out of 5000000
- 35920 multiletter control sequences out of 15000+600000
+ 35921 multiletter control sequences out of 15000+600000
  572024 words of font info for 63 fonts, out of 8000000 for 9000
- 59 hyphenation exceptions out of 8191
+ 14 hyphenation exceptions out of 8191
  69i,12n,79p,1193b,571s stack positions out of 10000i,1000n,20000p,200000b,200000s
- </home/nemo/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/tcrm0800.600p
-k> </home/nemo/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/tcrm1200.600p
-k> </home/nemo/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1440.600p
-k> </home/nemo/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1200.600p
-k> </home/nemo/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ecti1200.600p
-k> </home/nemo/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ecrm1200.600p
-k> </home/nemo/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbi3583.600p
-k> </home/nemo/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx2074.600p
-k> </home/nemo/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx1728.600p
-k></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></us
-r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share
-/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texliv
-e/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
-Output written on main.pdf (25 pages, 831092 bytes).
+ </home/mspacman/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/tcrm0800.
+600pk> </home/mspacman/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/tcrm1
+200.600pk> </home/mspacman/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/ec/e
+cbx1440.600pk> </home/mspacman/.texlive2023/texmf-var/fonts/pk/ljfour/jknappen/
+ec/ecbx1200.600pk> </home/mspacman/.texlive2023/texmf-var/fonts/pk/ljfour/jknap
+pen/ec/ecti1200.600pk> </home/mspacman/.texlive2023/texmf-var/fonts/pk/ljfour/j
+knappen/ec/ecrm1200.600pk> </home/mspacman/.texlive2023/texmf-var/fonts/pk/ljfo
+ur/jknappen/ec/ecbi3583.600pk> </home/mspacman/.texlive2023/texmf-var/fonts/pk/
+ljfour/jknappen/ec/ecbx2074.600pk> </home/mspacman/.texlive2023/texmf-var/fonts
+/pk/ljfour/jknappen/ec/ecbx1728.600pk></usr/share/texlive/texmf-dist/fonts/type
+1/public/amsfonts/cm/cmmi12.pfb></usr/share/texlive/texmf-dist/fonts/type1/publ
+ic/amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsf
+onts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm
+/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.
+pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy5.pfb></u
+sr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/shar
+e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texli
+ve/texmf-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/share/texlive/texmf-dis
+t/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/share/texlive/texmf-dist/fonts/type
+1/urw/helvetic/uhvro8a.pfb>
+Output written on main.pdf (28 pages, 908610 bytes).
 PDF statistics:
- 772 PDF objects out of 1000 (max. 8388607)
- 433 compressed objects within 5 object streams
- 106 named destinations out of 1000 (max. 500000)
- 418 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 859 PDF objects out of 1000 (max. 8388607)
+ 496 compressed objects within 5 object streams
+ 118 named destinations out of 1000 (max. 500000)
+ 439 words of extra memory for PDF output out of 10000 (max. 10000000)
 
