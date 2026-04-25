@@ -12,10 +12,12 @@
 //   REV SparkMAX x 2 -- CAN ID 1 = left, ID 2 = right
 //
 // Host -> Teensy (115200 baud, newline-terminated):
-//   L<rpm> R<rpm>     set wheel setpoints (e.g. "L500 R-500")
-//   S                 stop both wheels
+//   L<rpm> R<rpm>     VELOCITY mode — wheel RPM setpoints (closed-loop PID)
+//   UL<d> UR<d>       DUTY mode     — open-loop duty cycle, -1.0..1.0
+//   S                 stop both wheels (resets to velocity mode)
 //   D                 print one DIAG line
-//   KP/KI/KD/KF<val>  tune SparkMAX PID slot 0 (interactive only, both motors)
+//   KP/KI/KD/KF<val>  tune SparkMAX PID slot 0 (note: param-write currently
+//                     broken per REV-Specs; fix via REV Hardware Client for now)
 //   BURN              persist current PID gains to SparkMAX flash
 //
 // Teensy -> Host:
@@ -48,17 +50,24 @@ static constexpr float    MAX_RPM        = 3000.0f;
 // ---------- SparkMAX CAN protocol constants ----------------------------------
 static constexpr uint8_t  SPARK_DEV_TYPE = 2;
 static constexpr uint8_t  SPARK_MFG      = 5;
-static constexpr uint8_t  CLS_VELOCITY   = 1;   // velocity setpoint
-static constexpr uint8_t  IDX_VELOCITY   = 2;
+static constexpr uint8_t  CLS_VELOCITY   = 0;   // velocity setpoint per REV-Specs 2.1.0 (FW 25+)
+static constexpr uint8_t  IDX_VELOCITY   = 0;
+static constexpr uint8_t  CLS_DUTY       = 0;   // duty-cycle setpoint
+static constexpr uint8_t  IDX_DUTY       = 2;
+static constexpr float    MAX_DUTY       = 0.30f;  // safety cap (open-loop, bench)
 static constexpr uint8_t  CLS_STATUS_CFG = 1;   // SET_STATUSES_ENABLED
 static constexpr uint8_t  IDX_STATUS_CFG = 0;
 static constexpr uint8_t  CLS_STATUS     = 46;  // periodic status frames
 static constexpr uint8_t  IDX_STATUS_2   = 2;
 static constexpr uint8_t  CLS_HB         = 11;  // REV secondary heartbeat
 static constexpr uint8_t  IDX_HB         = 2;
-static constexpr uint8_t  CLS_PARAM      = 48;  // parameter write
+// PARAMETER_WRITE and PERSIST_PARAMETERS per REV-Specs spark-frames-2.1.0.
+// The old firmware used cls=48 for both, which does not exist in the spec —
+// all previous KP/KI/KD/KF commands and BURN commands were silently discarded.
+static constexpr uint8_t  CLS_PARAM      = 14;  // PARAMETER_WRITE
 static constexpr uint8_t  IDX_PARAM_SET  = 0;
-static constexpr uint8_t  IDX_PARAM_BURN = 2;
+static constexpr uint8_t  CLS_BURN       = 63;  // PERSIST_PARAMETERS
+static constexpr uint8_t  IDX_BURN       = 15;
 static constexpr uint32_t UNIVERSAL_HB   = 0x01011840;  // roboRIO heartbeat
 
 // SparkMAX PID slot-0 parameter IDs — canonical values from REV's
@@ -70,22 +79,26 @@ static constexpr uint8_t  PID_KP      = 13;
 static constexpr uint8_t  PID_KI      = 14;
 static constexpr uint8_t  PID_KD      = 15;
 static constexpr uint8_t  PID_KFF     = 16;
-static constexpr uint8_t  PTYPE_FLOAT = 2;
 
 // ---------- State ------------------------------------------------------------
 FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> can;
 
 struct Wheel {
     float          cmd_rpm  = 0.0f;
+    float          cmd_duty = 0.0f;
     volatile float meas_rpm = 0.0f;
     volatile float meas_pos = 0.0f;
     volatile bool  got_enc  = false;
 };
 static Wheel left, right;
 
+enum ControlMode { MODE_VELOCITY, MODE_DUTY };
+static ControlMode ctrl_mode = MODE_VELOCITY;
+
 static uint32_t t_ctrl = 0, t_fb = 0, t_enc_cfg = 0, t_last_host = 0;
 static uint32_t tx_count = 0, rx_count = 0;
 static bool     wdt_tripped = false;
+static volatile float bus_voltage = 0.0f;  // decoded from STATUS_0 (both devs report the same bus)
 
 // ---------- CAN helpers ------------------------------------------------------
 static inline uint32_t sparkId(uint8_t cls, uint8_t idx, uint8_t dev) {
@@ -126,6 +139,14 @@ static void setVelocity(uint8_t dev, float rpm) {
     canSend(sparkId(CLS_VELOCITY, IDX_VELOCITY, dev), d, 8);
 }
 
+static void setDuty(uint8_t dev, float duty) {
+    if (duty >  MAX_DUTY) duty =  MAX_DUTY;
+    if (duty < -MAX_DUTY) duty = -MAX_DUTY;
+    uint8_t d[8] = {0};
+    fromFloat(duty, d);
+    canSend(sparkId(CLS_DUTY, IDX_DUTY, dev), d, 8);
+}
+
 static void enableStatus2(uint8_t dev) {
     // mask=0x0004 / enable=0x0004 -> turn on STATUS_2 (encoder)
     uint8_t d[8] = {0};
@@ -134,19 +155,21 @@ static void enableStatus2(uint8_t dev) {
     canSend(sparkId(CLS_STATUS_CFG, IDX_STATUS_CFG, dev), d, 8);
 }
 
+// PARAMETER_WRITE payload (REV-Specs 2.1.0, spark-frames spec):
+// byte[0] = param_id, bytes[1:4] = value float32 LE. DLC = 5.
 static void setParam(uint8_t dev, uint8_t param_id, float value) {
-    uint8_t d[8] = {0};
-    fromFloat(value, d);
-    d[4] = param_id;
-    d[5] = PTYPE_FLOAT;
-    canSend(sparkId(CLS_PARAM, IDX_PARAM_SET, dev), d, 8);
+    uint8_t d[5] = {0};
+    d[0] = param_id;
+    fromFloat(value, d + 1);
+    canSend(sparkId(CLS_PARAM, IDX_PARAM_SET, dev), d, 5);
 }
 
+// PERSIST_PARAMETERS magic: 15011 = 0x3AA3 as uint16 LE at bytes[0:1].
 static void burnFlash(uint8_t dev) {
     uint8_t d[8] = {0};
     d[0] = 0xA3;
     d[1] = 0x3A;
-    canSend(sparkId(CLS_PARAM, IDX_PARAM_BURN, dev), d, 8);
+    canSend(sparkId(CLS_BURN, IDX_BURN, dev), d, 8);
 }
 
 static void tuneBoth(uint8_t param, float v) {
@@ -162,6 +185,15 @@ static void onCanRx(const CAN_message_t &msg) {
     uint8_t dev = msg.id & 0x3F;
     uint8_t cls = (msg.id >> 10) & 0x3F;
     uint8_t idx = (msg.id >>  6) & 0x0F;
+
+    // STATUS_0 (cls=46 idx=0): decode bus voltage. Per REV-Specs 2.1.0:
+    // bits [27:16] = VOLTAGE uint12 LE, scale × 0.007326 → V.
+    if (cls == CLS_STATUS && idx == 0 && msg.len >= 4) {
+        uint16_t v_raw = msg.buf[2] | ((uint16_t)(msg.buf[3] & 0x0F) << 8);
+        bus_voltage = v_raw * 0.007326f;
+        return;
+    }
+
     if (cls != CLS_STATUS || idx != IDX_STATUS_2) return;
 
     float vel = toFloat(msg.buf);
@@ -181,18 +213,46 @@ static void handleLine(char *line) {
 
     switch (cmd) {
         case 'S':
-            left.cmd_rpm = right.cmd_rpm = 0.0f;
+            // Stay in duty mode with 0% duty so the SparkMAX sees "idle"
+            // and its Brake idle-mode setting engages. Sending velocity=0
+            // via MODE_VELOCITY keeps the velocity PID running, which
+            // prevents the controller from entering idle state.
+            left.cmd_rpm  = right.cmd_rpm  = 0.0f;
+            left.cmd_duty = right.cmd_duty = 0.0f;
+            ctrl_mode = MODE_DUTY;
             t_last_host = now;
             wdt_tripped = false;
             Serial.println("OK S");
             return;
 
         case 'D':
-            Serial.printf("DIAG tx=%lu rx=%lu wdt=%d L=%.0f/%.0f R=%.0f/%.0f\n",
+            Serial.printf("DIAG tx=%lu rx=%lu wdt=%d mode=%s L=%.0f/%.0f R=%.0f/%.0f duty L=%.3f R=%.3f V=%.2f\n",
                           tx_count, rx_count, wdt_tripped ? 1 : 0,
+                          ctrl_mode == MODE_DUTY ? "DUTY" : "VEL",
                           left.meas_rpm, left.cmd_rpm,
-                          right.meas_rpm, right.cmd_rpm);
+                          right.meas_rpm, right.cmd_rpm,
+                          left.cmd_duty, right.cmd_duty,
+                          bus_voltage);
             return;
+
+        case 'U': {
+            // Duty-cycle command:  "UL0.05 UR-0.05" / "UL0.05" / "UR-0.05"
+            char *lp = strchr(line + 1, 'L'); if (!lp) lp = strchr(line + 1, 'l');
+            char *rp = strchr(line + 1, 'R'); if (!rp) rp = strchr(line + 1, 'r');
+            if (!lp && !rp) { Serial.println("ERR U?"); return; }
+            auto clamp = [](float v) {
+                if (v >  MAX_DUTY) return  MAX_DUTY;
+                if (v < -MAX_DUTY) return -MAX_DUTY;
+                return v;
+            };
+            if (lp) left.cmd_duty  = clamp(atof(lp + 1));
+            if (rp) right.cmd_duty = clamp(atof(rp + 1));
+            ctrl_mode = MODE_DUTY;
+            t_last_host = now;
+            wdt_tripped = false;
+            Serial.printf("OK UL=%.3f UR=%.3f\n", left.cmd_duty, right.cmd_duty);
+            return;
+        }
 
         case 'B':
             burnFlash(LEFT_ID);  delay(50);
@@ -218,12 +278,18 @@ static void handleLine(char *line) {
         }
 
         default: {
-            // "L500 R-500" / "L500" / "R-500"
+            // Velocity command: "L500 R-500" / "L500" / "R-500"
             char *lp = strchr(line, 'L'); if (!lp) lp = strchr(line, 'l');
             char *rp = strchr(line, 'R'); if (!rp) rp = strchr(line, 'r');
             if (!lp && !rp) { Serial.println("ERR unknown"); return; }
-            if (lp) left.cmd_rpm  = atof(lp + 1);
-            if (rp) right.cmd_rpm = atof(rp + 1);
+            auto clamp = [](float v) {
+                if (v >  MAX_RPM) return  MAX_RPM;
+                if (v < -MAX_RPM) return -MAX_RPM;
+                return v;
+            };
+            if (lp) left.cmd_rpm  = clamp(atof(lp + 1));
+            if (rp) right.cmd_rpm = clamp(atof(rp + 1));
+            ctrl_mode = MODE_VELOCITY;
             t_last_host = now;
             wdt_tripped = false;
             Serial.printf("OK L=%.0f R=%.0f\n", left.cmd_rpm, right.cmd_rpm);
@@ -250,7 +316,7 @@ void setup() {
     Serial.begin(115200);
     while (!Serial && millis() < 3000) {}
     Serial.println("# avros diff-drive bridge ready");
-    Serial.println("# proto: L<rpm> R<rpm> | S | D | K[PIDF]<v> | BURN");
+    Serial.println("# proto: L<rpm> R<rpm> | UL<d> UR<d> | S | D | K[PIDF]<v> | BURN");
 
     can.begin();
     can.setBaudRate(CAN_BAUD);
@@ -277,6 +343,11 @@ void loop() {
 
     uint32_t now = millis();
 
+    // Note: no !Serial guard. The Teensy's bool(Serial) can flicker under
+    // heavy CDC traffic, which would cause momentary heartbeat gaps and push
+    // the SparkMAX into blinking-magenta (disabled) state. The host watchdog
+    // below (300 ms) is sufficient to stop motors on USB disconnect.
+
     // 50 Hz control tick
     if (now - t_ctrl >= CTRL_DT_MS) {
         t_ctrl = now;
@@ -286,16 +357,24 @@ void loop() {
                 Serial.println("# WDT host-timeout stop");
                 wdt_tripped = true;
             }
-            left.cmd_rpm = right.cmd_rpm = 0.0f;
+            left.cmd_rpm  = right.cmd_rpm  = 0.0f;
+            left.cmd_duty = right.cmd_duty = 0.0f;
         }
 
         sendHeartbeats();
-        setVelocity(LEFT_ID,  left.cmd_rpm);
-        setVelocity(RIGHT_ID, right.cmd_rpm);
+        if (ctrl_mode == MODE_DUTY) {
+            setDuty(LEFT_ID,  left.cmd_duty);
+            setDuty(RIGHT_ID, right.cmd_duty);
+        } else {
+            setVelocity(LEFT_ID,  left.cmd_rpm);
+            setVelocity(RIGHT_ID, right.cmd_rpm);
+        }
     }
 
-    // Keep kicking STATUS_2 until both wheels are streaming
-    if ((!left.got_enc || !right.got_enc) && now - t_enc_cfg >= ENC_CFG_DT_MS) {
+    // STATUS_2 keepalive — SparkMAX loses the "enabled" bit on power-cycle,
+    // so we re-send the enable frame every ENC_CFG_DT_MS regardless of got_enc.
+    // Cheap (one frame per device per tick) and robust to SparkMAX reboots.
+    if (now - t_enc_cfg >= ENC_CFG_DT_MS) {
         t_enc_cfg = now;
         enableStatus2(LEFT_ID);
         enableStatus2(RIGHT_ID);
