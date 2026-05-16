@@ -1,0 +1,5 @@
+# Claude Code per-user settings
+.claude/
+
+# Local reference library (large past-competition PDFs)
+sample_design_reports/
