@@ -1004,7 +1004,7 @@ integrated into a 50~Hz \texttt{/wheel\_odom} message that the local EKF consume
         \toprule
         \textbf{KPI} & \textbf{Target} & \textbf{Measured} \\
         \midrule
-        Course completion time (Webots simulation)         & $\leq 5$~min   & \placeholder{measured~min} \\
+        Course completion time (Webots simulation)         & $\leq 5$~min   & Pending full-course run (path planner validated in sim) \\
         Course completion time (field, IGVC 6~min ceiling) & $\leq 5$~min   & \placeholder{measured~min} \\
         Ramp ascension ($\leq 15\%$ gradient per IGVC II.2)  & Pass           & \placeholder{Pass/fail} \\
         Maximum ground speed (hardware-governed)           & $\leq 5$~mph   & 3.4~mph (1.53~m/s) \\
@@ -1083,7 +1083,13 @@ Development and regression testing use the \texttt{avros\_sim} package, which ru
 with a \texttt{cpp\_campus.wbt} world imported from the Cal Poly Pomona OpenStreetMap
 extract. A custom Webots driver publishes simulated VLP-16, ZED, and GNSS topics that
 the rest of the stack consumes unchanged, enabling perception and Nav2 development
-without field time.
+without field time. The simulator has been used to validate the path-planning and
+control functionality of the autonomy stack: \texttt{NavfnPlanner} produces feasible
+plans through obstacle fields, and the MPPI controller follows them while respecting
+the same costmap-inflation constraints used on the real vehicle. A full timed
+AutoNav-course replication in simulation is planned but has not yet been run; the
+field course completion time below is therefore the primary KPI for the AutoNav
+challenge.
 
 Physical testing progresses through four stages: bench (subsystem in isolation),
 simulation (Webots full stack), low-speed field tests on a flat surface, and full-speed
