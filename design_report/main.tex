@@ -476,12 +476,6 @@ it is only released when the team is preparing to test movement. The main power 
 is set OFF when parked overnight. The acrylic panels and weatherstripping protect the
 electronics bay from rain and dust during outdoor parking.
 
-\textbf{Bench testing.} For drivetrain checks (track tension, gearbox inspection, motor
-characterization, encoder calibration), MARVIN is raised onto a workstation so the
-tracks turn freely without translating the vehicle. This eliminates the risk of
-uncommanded motion during firmware tuning and lets the team probe live signals safely
-with the vehicle de-coupled from the floor.
-
 \textbf{Charging.} The 48~V 25~Ah Aegis LiFePO\textsubscript{4} pack remains installed
 in MARVIN during charging; the DC House 48~V 18~A charger connects to a dedicated,
 keyed charge port wired into the vehicle's power system, so reverse-polarity and
@@ -1095,9 +1089,16 @@ Physical testing progresses through four stages: bench (subsystem in isolation),
 simulation (Webots full stack), low-speed field tests on a flat surface, and full-speed
 field tests on the IGVC practice course.
 
-\placeholder{Identify the key differences observed between simulation and the
-real-world test course (e.g., GPS noise floor, lighting variance vs. Webots, suspension
-dynamics not modeled in Webots). Describe how the test data drove parameter changes.}
+A timed full-course sim-versus-field comparison has not yet been completed. Four
+sim-vs-real gaps already drive specific design decisions: (i)~Webots GPS is
+noise-free vs.\ $\pm 2$--5~m on field (differential GPS fusion + 6$\sigma$ outlier
+rejection, \S6.2); (ii)~uniform sim lighting vs.\ outdoor sun-angle/reflectivity
+variation (runtime HSV auto-calibration, \S5.2); (iii)~Webots physics does not model
+track-suspension yaw drift and IMU vibration (IMU heading-hold, \S6.3); (iv)~USB-serial
+and CAN latencies are deterministic in sim but bounded on hardware by the 300~ms
+watchdog and 100~ms CAN heartbeat (\S4.3). A timed full-course Webots run is planned,
+after which costmap inflation and MPPI critic weights will be retuned to close the
+residual gap.
 
 % =============================================================================
 % IGVC 2026 §11 -- CYBER SECURITY ANALYSIS
