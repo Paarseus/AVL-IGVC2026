@@ -1,0 +1,65 @@
+% Two-channel E-stop hardware schematic: mechanical button + wireless receiver
+% feeding a series enable line into the SparkMAX motor controllers.
+\begin{tikzpicture}[
+    font=\footnotesize,
+    src/.style={draw, rounded corners, fill=warnred!20, minimum width=2.4cm, minimum height=0.85cm, align=center},
+    relay/.style={draw, fill=orange!20, minimum width=1.4cm, minimum height=0.85cm, align=center},
+    ctrl/.style={draw, rounded corners, fill=codeblue!15, minimum width=2.0cm, minimum height=0.85cm, align=center},
+    motor/.style={draw, circle, fill=gray!20, minimum size=0.95cm, inner sep=1pt},
+    batt/.style={draw, rounded corners, fill=warnred!10, minimum width=1.4cm, minimum height=0.7cm, align=center},
+    pwr/.style={-{Stealth[length=2mm]}, very thick, warnred},
+    sig/.style={-{Stealth[length=2mm]}, thick, codeblue},
+    en/.style={-{Stealth[length=2mm]}, thick, orange!80!black},
+    led/.style={draw, fill=cppgreen, regular polygon, regular polygon sides=3, minimum size=0.35cm, inner sep=0pt, rotate=-90},
+    note/.style={font=\scriptsize, gray, align=center},
+]
+
+% --- Power source ---
+\node[batt] (batt) at (0,0) {48\,V\\battery};
+
+% --- Two E-stop channels in series along the enable line ---
+\node[src, right=1.2cm of batt] (mech) {Mechanical\\E-stop (rear)};
+\node[src, right=0.6cm of mech] (wless) {Wireless\\E-stop receiver};
+
+% --- Series relay ---
+\node[relay, right=0.6cm of wless] (relay) {Enable\\relay};
+
+% --- Motor controllers ---
+\node[ctrl, right=1.0cm of relay, yshift=0.7cm] (spkL) {SparkMAX L};
+\node[ctrl, right=1.0cm of relay, yshift=-0.7cm] (spkR) {SparkMAX R};
+
+% --- Motors ---
+\node[motor, right=0.8cm of spkL] (neoL) {NEO\,L};
+\node[motor, right=0.8cm of spkR] (neoR) {NEO\,R};
+
+% --- Power rail (red) ---
+\draw[pwr] (batt.east) -- (mech.west);
+\draw[pwr] (mech.east) -- (wless.west);
+\draw[pwr] (wless.east) -- (relay.west);
+
+% --- Enable distributed to both SparkMAX ---
+\coordinate (jct) at ($(relay.east)+(0.45,0)$);
+\draw[en] (relay.east) -- (jct);
+\draw[en] (jct) |- (spkL.west);
+\draw[en] (jct) |- (spkR.west);
+\node[font=\scriptsize\bfseries, orange!80!black, above=1pt] at ($(relay.east)!0.55!(jct)$) {EN};
+
+% --- 3-phase out to motors ---
+\draw[pwr] (spkL.east) -- (neoL.west);
+\draw[pwr] (spkR.east) -- (neoR.west);
+
+% --- Indicator LEDs (external visibility) ---
+\node[led, above=0.25cm of mech] (led1) {};
+\node[note, above=0.02cm of led1] {ARM};
+\node[led, above=0.25cm of wless] (led2) {};
+\node[note, above=0.02cm of led2] {LINK};
+
+% --- Software bypass annotation (negative) ---
+\node[draw, dashed, gray, rounded corners, fit=(relay)(spkL)(spkR), inner sep=4pt, label={[font=\scriptsize, gray, anchor=north]below:hardware path --- software cannot override}] {};
+
+% --- Optional Jetson "soft stop" channel (informational, dashed) ---
+\node[ctrl, fill=cppgreen!12, above=1.1cm of relay] (jetson) {Jetson\,(SW stop)};
+\draw[sig, dashed] (jetson.south) -- (relay.north)
+    node[midway, right, font=\scriptsize]{advisory only};
+
+\end{tikzpicture}

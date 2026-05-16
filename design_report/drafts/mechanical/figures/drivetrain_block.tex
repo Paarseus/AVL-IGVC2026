@@ -1,0 +1,77 @@
+% Drivetrain signal chain: Jetson -> Teensy -> 2x SparkMAX (CAN) -> 2x NEO -> tracks
+\begin{tikzpicture}[
+    font=\footnotesize,
+    compute/.style={draw, rounded corners, fill=cppgreen!15, minimum width=2.0cm, minimum height=0.85cm, align=center},
+    mcu/.style={draw, rounded corners, fill=orange!20, minimum width=2.0cm, minimum height=0.85cm, align=center},
+    drv/.style={draw, rounded corners, fill=codeblue!15, minimum width=2.0cm, minimum height=0.85cm, align=center},
+    motor/.style={draw, circle, fill=gray!15, minimum size=1.1cm, align=center, inner sep=1pt},
+    track/.style={draw, thick, fill=gray!25, minimum width=1.5cm, minimum height=0.45cm, align=center, rounded corners=2pt},
+    batt/.style={draw, rounded corners, fill=warnred!15, minimum width=1.6cm, minimum height=0.7cm, align=center, font=\scriptsize},
+    arr/.style={-{Stealth[length=2mm]}, thick},
+    busarr/.style={-{Stealth[length=2mm]}, very thick, codeblue},
+    pwr/.style={-{Stealth[length=2mm]}, very thick, warnred},
+    lbl/.style={font=\scriptsize, midway, above, sloped},
+    plbl/.style={font=\scriptsize, midway, above},
+    grp/.style={draw, dashed, rounded corners, gray!60, inner sep=5pt},
+]
+
+% --- Compute (left) ---
+\node[compute] (jetson) {Jetson Orin\\\textit{ROS\,2 Nav2}};
+% --- MCU bridge ---
+\node[mcu, right=1.6cm of jetson] (teensy) {Teensy 4.1\\\textit{motion bridge}};
+
+% --- SparkMAX pair (split vertically) ---
+\node[drv, right=2.0cm of teensy, yshift=0.95cm] (spkL) {SparkMAX L};
+\node[drv, right=2.0cm of teensy, yshift=-0.95cm] (spkR) {SparkMAX R};
+
+% --- NEO motors ---
+\node[motor, right=1.0cm of spkL] (neoL) {NEO\,L};
+\node[motor, right=1.0cm of spkR] (neoR) {NEO\,R};
+
+% --- Tracks ---
+\node[track, right=0.5cm of neoL] (trkL) {Track L};
+\node[track, right=0.5cm of neoR] (trkR) {Track R};
+
+% --- Battery (placed above, feeding both SparkMAX with single arrow) ---
+\coordinate (sparkmid) at ($(spkL.north)!0.5!(spkR.north)$);
+\node[batt] (batt) at ($(sparkmid)+(0,1.7)$) {48\,V battery};
+
+% --- Signal: Jetson -> Teensy (USB serial) ---
+\draw[arr] (jetson) -- (teensy);
+\node[font=\scriptsize, fill=white, inner sep=1pt] at ($(jetson.east)!0.5!(teensy.west)+(0,0.18)$) {\texttt{cmd\_vel}};
+\node[font=\scriptsize, fill=white, inner sep=1pt] at ($(jetson.east)!0.5!(teensy.west)+(0,-0.18)$) {USB / 50\,Hz};
+
+% --- Teensy -> CAN bus -> two SparkMAX ---
+\coordinate (canjct) at ($(teensy.east)+(0.7,0)$);
+\draw[busarr] (teensy.east) -- (canjct);
+\node[font=\scriptsize, codeblue, above=2pt of canjct] {CAN 1\,Mbit/s};
+\draw[busarr] (canjct) |- (spkL.west);
+\draw[busarr] (canjct) |- (spkR.west);
+
+% --- SparkMAX -> NEO (3-phase power) ---
+\draw[pwr] (spkL.east) -- (neoL.west);
+\node[font=\scriptsize, warnred, above=1pt] at ($(spkL.east)!0.5!(neoL.west)+(0,0.05)$) {3$\phi$};
+\draw[pwr] (spkR.east) -- (neoR.west);
+\node[font=\scriptsize, warnred, above=1pt] at ($(spkR.east)!0.5!(neoR.west)+(0,0.05)$) {3$\phi$};
+
+% --- NEO -> track (mechanical) ---
+\draw[line width=1.2pt] (neoL.east) -- (trkL.west);
+\draw[line width=1.2pt] (neoR.east) -- (trkR.west);
+
+% --- Encoder feedback loops (NEO -> SparkMAX, dashed) ---
+\draw[arr, dashed, gray] (neoL.south) .. controls +(0,-0.45) and +(0.5,-0.45) .. (spkL.south)
+    node[midway, below=1pt, font=\scriptsize, gray]{Hall enc.};
+\draw[arr, dashed, gray] (neoR.north) .. controls +(0,0.45) and +(0.5,0.45) .. (spkR.north)
+    node[midway, above=1pt, font=\scriptsize, gray]{Hall enc.};
+
+% --- 48V supply: one arrow splits down to both SparkMAX ---
+\coordinate (battfan) at ($(batt.south)+(0,-0.25)$);
+\draw[pwr] (batt.south) -- (battfan);
+\draw[pwr, rounded corners=4pt] (battfan) -| (spkL.north);
+\draw[pwr, rounded corners=4pt] (battfan) -| (spkR.north);
+
+% --- Group indicating closed-loop velocity control ---
+\node[grp, fit=(spkL)(spkR)(neoL)(neoR),
+      label={[font=\scriptsize, gray, anchor=north]below:1\,kHz velocity loop (per side)}] {};
+
+\end{tikzpicture}
