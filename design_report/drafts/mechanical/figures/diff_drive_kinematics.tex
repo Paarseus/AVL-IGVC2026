@@ -1,69 +1,116 @@
-% Differential-drive kinematics: pivot turn / in-place spin / gradual curve.
-% Each panel shows the tracked vehicle from above with track-velocity arrows
-% and the instantaneous center of rotation (ICR) as a red dot.
+% Differential-drive kinematics: pivot / in-place spin / gradual curve.
+% Three panels, each consistent in style. Conventions:
+%   - ICR rendered as red ringed dot with label "ICR"
+%   - track width b shown as a dimension bracket in panel (a) only (defined once)
+%   - body-frame axes (x_b, y_b) shown in panel (b) only (also defined once)
+%   - velocity arrow magnitudes are normalized to body length (not encoding numeric magnitude)
 \begin{tikzpicture}[
-    scale=1.15, every node/.style={transform shape},
+    scale=1.18, every node/.style={transform shape},
     font=\small,
-    track/.style={draw, thick, fill=gray!15, rounded corners=1pt},
-    body/.style={draw, thick, fill=cppgreen!10, rounded corners=2pt},
-    vel/.style={-{Stealth[length=2mm,width=1.6mm]}, very thick, codeblue},
-    icr/.style={circle, fill=warnred, inner sep=1.6pt},
-    icrlabel/.style={font=\scriptsize\itshape, warnred},
-    arc/.style={-{Stealth[length=1.6mm]}, semithick, dashed, warnred!80},
+    >={Stealth[length=2.0mm, width=1.5mm]},
+    track/.style={draw=black!70, thick, fill=black!18, rounded corners=1pt},
+    body/.style={draw=black!80, thick, fill=cppgreen!8, rounded corners=2pt},
+    vel/.style={->, very thick, codeblue},
+    velzero/.style={draw=codeblue, fill=codeblue!25, circle, inner sep=1.2pt},
+    icr/.style={circle, draw=warnred, line width=0.8pt, fill=warnred!25, minimum size=0.30cm, inner sep=0pt},
+    icrlabel/.style={font=\scriptsize\bfseries, warnred},
+    arc/.style={->, semithick, densely dashed, warnred!85},
     title/.style={font=\small\bfseries},
+    dim/.style={<->, gray!65, semithick, >={Stealth[length=1.4mm]}},
+    extline/.style={gray!50, thin},
+    dimtxt/.style={font=\scriptsize, gray!70!black},
 ]
 
-% ---------- Panel 1: PIVOT TURN ----------
+% =========================================================================
+% Panel (a): PIVOT TURN
+% =========================================================================
 \begin{scope}[shift={(0,0)}]
-    \node[title] at (1.0, 2.6) {(a) Pivot turn};
-    % body
+    \node[title] at (1.0, 2.85) {(a) Pivot turn};
+
+    % body + tracks
     \draw[body] (0.2,-1.0) rectangle (1.8,1.0);
-    % tracks (left and right)
-    \draw[track] (-0.1,-1.1) rectangle (0.3,1.1);  % left
-    \draw[track] (1.7,-1.1) rectangle (2.1,1.1);   % right
-    % velocity arrows
-    \draw[vel] (0.1, 0.0) -- ++(0,0.0001) node[above=2pt, codeblue]{$v_L\!=\!0$};
-    \draw[vel] (1.9,-0.7) -- (1.9, 0.7) node[above=2pt, codeblue]{$v_R$};
-    % ICR at stationary (left) track center
-    \node[icr] (icr1) at (0.1, 0.0) {};
-    \node[icrlabel, left=2pt of icr1] {ICR};
+    \draw[track] (-0.1,-1.1) rectangle (0.3,1.1);
+    \draw[track] (1.7,-1.1) rectangle (2.1,1.1);
+
+    % velocity arrows: left = 0 (dot, placed slightly inboard so ICR ring is clear)
+    \node[velzero] (lz) at (0.1, -0.55) {};
+    \node[font=\scriptsize, codeblue, anchor=north] at (0.1, -0.70) {$v_L\!=\!0$};
+    \draw[vel] (1.9,-0.6) -- (1.9, 0.8);
+    \node[font=\scriptsize, codeblue, anchor=south] at (1.9, 0.85) {$v_R$};
+
+    % ICR at stationary contact patch — dot on track centerline, label outside body
+    \node[icr] (icr1) at (0.1, 0.20) {};
+    \draw[gray!55, thin] (-0.85, 1.40) -- (icr1.north west);
+    \node[icrlabel, anchor=east, inner sep=1pt] at (-0.55, 1.40) {ICR};
+
     % rotation arc
-    \draw[arc] (1.6,-0.4) arc[start angle=-15, end angle=45, radius=1.7cm];
+    \draw[arc] (1.7,-0.55) arc[start angle=-18, end angle=46, radius=1.85cm];
+
+    % track width b dimension (drawn once on panel a)
+    \draw[extline] (-0.1,-1.40) -- (-0.1,-1.10);
+    \draw[extline] ( 2.1,-1.40) -- ( 2.1,-1.10);
+    \draw[dim]    (-0.1,-1.30) -- ( 2.1,-1.30);
+    \node[dimtxt] at (1.0,-1.45) {track width $b$};
 \end{scope}
 
-% ---------- Panel 2: IN-PLACE SPIN ----------
+% =========================================================================
+% Panel (b): IN-PLACE ROTATION
+% =========================================================================
 \begin{scope}[shift={(4.5,0)}]
-    \node[title] at (1.0, 2.6) {(b) In-place rotation};
+    \node[title] at (1.0, 2.85) {(b) In-place rotation};
+
     \draw[body] (0.2,-1.0) rectangle (1.8,1.0);
     \draw[track] (-0.1,-1.1) rectangle (0.3,1.1);
     \draw[track] (1.7,-1.1) rectangle (2.1,1.1);
-    % opposing arrows
-    \draw[vel] (0.1, 0.7) -- (0.1,-0.7) node[below=2pt, codeblue]{$v_L\!=\!-v$};
-    \draw[vel] (1.9,-0.7) -- (1.9, 0.7) node[above=2pt, codeblue]{$v_R\!=\!+v$};
-    % ICR at geometric center
+
+    % opposing arrows: L back, R forward (equal magnitude)
+    \draw[vel] (0.1, 0.6) -- (0.1,-0.6);
+    \node[font=\scriptsize, codeblue, anchor=north] at (0.1, -0.65) {$v_L\!=\!-v$};
+    \draw[vel] (1.9,-0.6) -- (1.9, 0.6);
+    \node[font=\scriptsize, codeblue, anchor=south] at (1.9, 0.65) {$v_R\!=\!+v$};
+
+    % ICR at geometric center — label with leader above body (clears arrows)
     \node[icr] (icr2) at (1.0, 0.0) {};
-    \node[icrlabel, above=2pt of icr2] {ICR};
-    % rotation arc (full circle hint)
-    \draw[arc] (1.0,0) ++(20:1.1) arc[start angle=20, end angle=160, radius=1.1cm];
+    \draw[gray!55, thin] (1.0, 1.45) -- (icr2.north);
+    \node[icrlabel, anchor=south, inner sep=1pt] at (1.0, 1.45) {ICR};
+
+    % rotation arc (semicircle hint)
+    \draw[arc] (1.0,0) ++(15:1.15) arc[start angle=15, end angle=165, radius=1.15cm];
+
+    % body-frame axes (drawn once on panel b)
+    \begin{scope}[shift={(-1.05,-1.45)}]
+        \draw[->, black!75, thin] (0,0) -- (0.45,0) node[font=\scriptsize, anchor=west, inner sep=1pt]{$x_b$};
+        \draw[->, black!75, thin] (0,0) -- (0,0.45) node[font=\scriptsize, anchor=south, inner sep=1pt]{$y_b$};
+    \end{scope}
 \end{scope}
 
-% ---------- Panel 3: GRADUAL CURVE ----------
+% =========================================================================
+% Panel (c): GRADUAL CURVE
+% =========================================================================
 \begin{scope}[shift={(9.0,0)}]
-    \node[title] at (1.0, 2.6) {(c) Gradual curve};
+    \node[title] at (1.0, 2.85) {(c) Gradual curve};
+
     \draw[body] (0.2,-1.0) rectangle (1.8,1.0);
     \draw[track] (-0.1,-1.1) rectangle (0.3,1.1);
     \draw[track] (1.7,-1.1) rectangle (2.1,1.1);
-    % both forward, right faster
-    \draw[vel] (0.1,-0.3) -- (0.1, 0.4) node[above=2pt, codeblue]{$v_L$};
-    \draw[vel] (1.9,-0.7) -- (1.9, 0.7) node[above=2pt, codeblue]{$v_R\!>\!v_L$};
-    % ICR off to the left (large radius)
-    \node[icr] (icr3) at (-2.6, 0.0) {};
-    \node[icrlabel, below=2pt of icr3] {ICR};
-    % dashed line from ICR through axle
-    \draw[dashed, warnred!70, thin] (icr3) -- (1.9, 0.0);
-    \node[icrlabel] at (-0.8, 0.18) {$R$};
-    % curve arc
-    \draw[arc] (1.8, 0.7) arc[start angle=15, end angle=-20, radius=2.4cm];
+
+    % both forward, right longer than left
+    \draw[vel] (0.1,-0.30) -- (0.1, 0.40);
+    \node[font=\scriptsize, codeblue, anchor=south] at (0.1, 0.45) {$v_L$};
+    \draw[vel] (1.9,-0.60) -- (1.9, 0.80);
+    \node[font=\scriptsize, codeblue, anchor=south] at (1.9, 0.85) {$v_R\!>\!v_L$};
+
+    % ICR pulled in so it sits at the panel boundary (visible but clearly off-body)
+    \node[icr] (icr3) at (-1.55, 0.0) {};
+    \node[icrlabel, anchor=south, inner sep=1pt] at (-1.55, 0.20) {ICR};
+
+    % radius from ICR to vehicle center; R label sits clearly on the dashed line
+    \draw[gray!55, thin, densely dashed] (icr3) -- (1.0, 0.0);
+    \draw[gray!55, thin, densely dashed] (icr3) -- (2.1, 0.0);
+    \node[font=\scriptsize\bfseries, gray!70!black, fill=white, inner sep=1pt] at (-0.30, 0.0) {$R$};
+
+    % small visible arc segment showing the turn path (centered on ICR, radius ~2.55)
+    \draw[arc] (icr3) ++(8:2.55) arc[start angle=8, end angle=-12, radius=2.55cm];
 \end{scope}
 
 \end{tikzpicture}

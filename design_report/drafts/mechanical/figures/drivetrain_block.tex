@@ -1,77 +1,107 @@
-% Drivetrain signal chain: Jetson -> Teensy -> 2x SparkMAX (CAN) -> 2x NEO -> tracks
+% Drivetrain signal chain: Jetson -> Teensy -> 2x SparkMAX -> 2x NEO -> Tracks.
+% Bus-bar 48 V power rail across the top. Color-coded edges with a legend strip.
 \begin{tikzpicture}[
     font=\footnotesize,
-    compute/.style={draw, rounded corners, fill=cppgreen!15, minimum width=2.0cm, minimum height=0.85cm, align=center},
-    mcu/.style={draw, rounded corners, fill=orange!20, minimum width=2.0cm, minimum height=0.85cm, align=center},
-    drv/.style={draw, rounded corners, fill=codeblue!15, minimum width=2.0cm, minimum height=0.85cm, align=center},
-    motor/.style={draw, circle, fill=gray!15, minimum size=1.1cm, align=center, inner sep=1pt},
-    track/.style={draw, thick, fill=gray!25, minimum width=1.5cm, minimum height=0.45cm, align=center, rounded corners=2pt},
-    batt/.style={draw, rounded corners, fill=warnred!15, minimum width=1.6cm, minimum height=0.7cm, align=center, font=\scriptsize},
-    arr/.style={-{Stealth[length=2mm]}, thick},
-    busarr/.style={-{Stealth[length=2mm]}, very thick, codeblue},
-    pwr/.style={-{Stealth[length=2mm]}, very thick, warnred},
-    lbl/.style={font=\scriptsize, midway, above, sloped},
-    plbl/.style={font=\scriptsize, midway, above},
-    grp/.style={draw, dashed, rounded corners, gray!60, inner sep=5pt},
+    >={Stealth[length=2mm, width=1.5mm]},
+    compute/.style={draw=black!80, rounded corners, fill=cppgreen!12,
+                    minimum width=2.1cm, minimum height=0.85cm, align=center},
+    mcu/.style={draw=black!80, rounded corners, fill=orange!18,
+                    minimum width=2.1cm, minimum height=0.85cm, align=center},
+    drv/.style={draw=black!80, rounded corners, fill=codeblue!12,
+                    minimum width=2.1cm, minimum height=0.85cm, align=center},
+    motor/.style={draw=black!80, circle, fill=black!10, minimum size=1.05cm,
+                    align=center, inner sep=1pt},
+    track/.style={draw=black!80, thick, fill=black!18, minimum width=1.6cm,
+                    minimum height=0.55cm, align=center, pattern=north east lines,
+                    pattern color=black!35},
+    busbar/.style={draw=warnred!85, line width=2.2pt, fill=warnred!12,
+                    minimum width=6.8cm, minimum height=0.36cm, align=center,
+                    rounded corners=2pt},
+    cmd/.style={->, thick, black!75},
+    can/.style={->, thick, codeblue!85},
+    pwr/.style={->, very thick, warnred!85},
+    fb/.style={->, semithick, dashed, gray!70!black},
+    legend/.style={draw=black!40, very thin, rounded corners=2pt, fill=white,
+                    inner sep=3pt, font=\scriptsize},
 ]
 
-% --- Compute (left) ---
+% ---------- Compute / MCU column ----------
 \node[compute] (jetson) {Jetson Orin\\\textit{ROS\,2 Nav2}};
-% --- MCU bridge ---
-\node[mcu, right=1.6cm of jetson] (teensy) {Teensy 4.1\\\textit{motion bridge}};
+\node[mcu, right=1.7cm of jetson] (teensy) {Teensy 4.1\\\textit{motion bridge}};
 
-% --- SparkMAX pair (split vertically) ---
-\node[drv, right=2.0cm of teensy, yshift=0.95cm] (spkL) {SparkMAX L};
-\node[drv, right=2.0cm of teensy, yshift=-0.95cm] (spkR) {SparkMAX R};
+% ---------- Driver pair ----------
+\node[drv, right=2.1cm of teensy, yshift= 0.95cm] (spkL) {SparkMAX L};
+\node[drv, right=2.1cm of teensy, yshift=-0.95cm] (spkR) {SparkMAX R};
 
-% --- NEO motors ---
-\node[motor, right=1.0cm of spkL] (neoL) {NEO\,L};
-\node[motor, right=1.0cm of spkR] (neoR) {NEO\,R};
+% ---------- Motors ----------
+\node[motor, right=1.1cm of spkL] (neoL) {NEO\,L};
+\node[motor, right=1.1cm of spkR] (neoR) {NEO\,R};
 
-% --- Tracks ---
-\node[track, right=0.5cm of neoL] (trkL) {Track L};
-\node[track, right=0.5cm of neoR] (trkR) {Track R};
+% ---------- Tracks (distinct hatched rectangles, NOT circles) ----------
+\node[track, right=0.55cm of neoL] (trkL) {Track\,L};
+\node[track, right=0.55cm of neoR] (trkR) {Track\,R};
 
-% --- Battery (placed above, feeding both SparkMAX with single arrow) ---
+% ---------- 48 V bus bar across the top ----------
 \coordinate (sparkmid) at ($(spkL.north)!0.5!(spkR.north)$);
-\node[batt] (batt) at ($(sparkmid)+(0,1.7)$) {48\,V battery};
+\node[busbar] (bus) at ($(sparkmid)+(0,1.55)$) {48\,V power bus};
 
-% --- Signal: Jetson -> Teensy (USB serial) ---
-\draw[arr] (jetson) -- (teensy);
-\node[font=\scriptsize, fill=white, inner sep=1pt] at ($(jetson.east)!0.5!(teensy.west)+(0,0.18)$) {\texttt{cmd\_vel}};
-\node[font=\scriptsize, fill=white, inner sep=1pt] at ($(jetson.east)!0.5!(teensy.west)+(0,-0.18)$) {USB / 50\,Hz};
+% ---------- Command path: Jetson -> Teensy (USB) ----------
+\draw[cmd] (jetson) -- (teensy);
+\node[font=\scriptsize, fill=white, inner sep=1pt]
+    at ($(jetson.east)!0.5!(teensy.west)+(0, 0.18)$) {\texttt{cmd\_vel}};
+\node[font=\scriptsize, fill=white, inner sep=1pt]
+    at ($(jetson.east)!0.5!(teensy.west)+(0,-0.18)$) {USB / 50\,Hz};
 
-% --- Teensy -> CAN bus -> two SparkMAX ---
+% ---------- Teensy -> CAN -> both SparkMAX ----------
 \coordinate (canjct) at ($(teensy.east)+(0.7,0)$);
-\draw[busarr] (teensy.east) -- (canjct);
-\node[font=\scriptsize, codeblue, above=2pt of canjct] {CAN 1\,Mbit/s};
-\draw[busarr] (canjct) |- (spkL.west);
-\draw[busarr] (canjct) |- (spkR.west);
+\draw[can] (teensy.east) -- (canjct);
+\draw[can] (canjct) |- (spkL.west);
+\draw[can] (canjct) |- (spkR.west);
+\node[font=\scriptsize, codeblue, fill=white, inner sep=1pt, anchor=south]
+    at ($(teensy.east)!0.5!(canjct)+(0,0.12)$) {CAN 1\,Mbit/s};
 
-% --- SparkMAX -> NEO (3-phase power) ---
+% ---------- SparkMAX -> NEO (3-phase PWM) ----------
 \draw[pwr] (spkL.east) -- (neoL.west);
-\node[font=\scriptsize, warnred, above=1pt] at ($(spkL.east)!0.5!(neoL.west)+(0,0.05)$) {3$\phi$};
 \draw[pwr] (spkR.east) -- (neoR.west);
-\node[font=\scriptsize, warnred, above=1pt] at ($(spkR.east)!0.5!(neoR.west)+(0,0.05)$) {3$\phi$};
+\node[font=\scriptsize, warnred, fill=white, inner sep=1pt]
+    at ($(spkL.east)!0.5!(neoL.west)+(0,0.18)$) {3$\phi$};
+\node[font=\scriptsize, warnred, fill=white, inner sep=1pt]
+    at ($(spkR.east)!0.5!(neoR.west)+(0,0.18)$) {3$\phi$};
 
-% --- NEO -> track (mechanical) ---
-\draw[line width=1.2pt] (neoL.east) -- (trkL.west);
-\draw[line width=1.2pt] (neoR.east) -- (trkR.west);
+% ---------- NEO -> Track (mechanical, thick black) ----------
+\draw[line width=1.4pt, black!80] (neoL.east) -- (trkL.west);
+\draw[line width=1.4pt, black!80] (neoR.east) -- (trkR.west);
 
-% --- Encoder feedback loops (NEO -> SparkMAX, dashed) ---
-\draw[arr, dashed, gray] (neoL.south) .. controls +(0,-0.45) and +(0.5,-0.45) .. (spkL.south)
-    node[midway, below=1pt, font=\scriptsize, gray]{Hall enc.};
-\draw[arr, dashed, gray] (neoR.north) .. controls +(0,0.45) and +(0.5,0.45) .. (spkR.north)
-    node[midway, above=1pt, font=\scriptsize, gray]{Hall enc.};
+% ---------- Hall encoder feedback loops (dashed gray, routed through the empty middle
+%            gap between the two driver/motor rows so they never share a horizontal
+%            axis with the forward 3-phase power arrows) ----------
+\draw[fb] (neoL.south) .. controls +(0,-0.55) and +(0.8,-0.55) .. (spkL.south east);
+\node[font=\scriptsize, gray!70!black, anchor=north]
+    at ($(spkL.south east)!0.5!(neoL.south)+(0,-0.42)$) {Hall enc.};
 
-% --- 48V supply: one arrow splits down to both SparkMAX ---
-\coordinate (battfan) at ($(batt.south)+(0,-0.25)$);
-\draw[pwr] (batt.south) -- (battfan);
-\draw[pwr, rounded corners=4pt] (battfan) -| (spkL.north);
-\draw[pwr, rounded corners=4pt] (battfan) -| (spkR.north);
+\draw[fb] (neoR.north) .. controls +(0,0.55) and +(0.8,0.55) .. (spkR.north east);
+\node[font=\scriptsize, gray!70!black, anchor=south]
+    at ($(spkR.north east)!0.5!(neoR.north)+(0,0.42)$) {Hall enc.};
 
-% --- Group indicating closed-loop velocity control ---
-\node[grp, fit=(spkL)(spkR)(neoL)(neoR),
-      label={[font=\scriptsize, gray, anchor=north]below:1\,kHz velocity loop (per side)}] {};
+% ---------- 48 V supply: bus bar -> two stubs into each SparkMAX top ----------
+\draw[pwr] (bus.south -| spkL.north) -- (spkL.north);
+\draw[pwr] (bus.south -| spkR.north) -- (spkR.north);
+
+% ---------- Brace + label: closed-loop velocity control region ----------
+\draw[decorate, decoration={brace, amplitude=4pt, mirror}, gray!70!black, thin]
+    ($(spkL.south west)+(0,-0.95)$) -- ($(neoR.south east)+(0,-0.95)$);
+\node[font=\scriptsize, gray!70!black]
+    at ($(spkL.south)!0.5!(neoR.south)+(0,-1.30)$)
+    {closed-loop velocity control: SparkMAX runs 1\,kHz PID per side};
+
+% ---------- LEGEND strip placed BELOW the brace, horizontal layout, doesn't collide with tracks ----------
+\node[legend, anchor=north] at ($(spkL.south)!0.5!(neoR.south)+(0,-1.80)$) {
+    \begin{tikzpicture}[baseline=0pt, x=0.6cm]
+        \draw[pwr]  (0,0)   -- (0.7,0);   \node[anchor=west, font=\scriptsize] at (0.75,0) {power};
+        \draw[can]  (3,0)   -- (3.7,0);   \node[anchor=west, font=\scriptsize] at (3.75,0) {CAN};
+        \draw[cmd]  (5.6,0) -- (6.3,0);   \node[anchor=west, font=\scriptsize] at (6.35,0) {command};
+        \draw[fb]   (9,0)   -- (9.7,0);   \node[anchor=west, font=\scriptsize] at (9.75,0) {feedback};
+    \end{tikzpicture}
+};
 
 \end{tikzpicture}

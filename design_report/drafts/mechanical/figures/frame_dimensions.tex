@@ -1,72 +1,81 @@
-% Top-down dimensioned view of the chassis: tracks on the sides, diamond-plate
-% deck inside, sensor shelf outline (dashed) above. Dimensions show the deck
-% size (21.5x30), shelf size (23x23), and overall length.
+% Top-down dimensioned drawing in engineering-drawing convention:
+%   - object lines:   thick black
+%   - dimension lines: medium gray with extension stubs in the margin
+%   - centerline:     thin gray dash-dot
+%   - hidden / projected (sensor shelf): thin black dashed
 \begin{tikzpicture}[
     font=\footnotesize,
-    track/.style={draw, thick, fill=gray!30, rounded corners=2pt},
-    deck/.style={draw, thick, fill=gray!10, pattern=north east lines, pattern color=gray!40},
-    shelf/.style={draw, very thick, dashed, cppgreen, fill=cppgreen!8, fill opacity=0.25, text opacity=1.0},
-    payload/.style={draw, semithick, fill=cppgreen!25, rounded corners=1.5pt},
-    battery/.style={draw, semithick, fill=warnred!25, rounded corners=1.5pt},
-    dim/.style={<->, >={Stealth[length=1.6mm]}, gray, semithick},
-    extline/.style={gray, thin},
-    dimtxt/.style={font=\scriptsize, gray, fill=white, inner sep=1pt},
+    >={Stealth[length=1.8mm, width=1.4mm]},
+    objline/.style={draw=black!80, thick},
+    track/.style={objline, fill=black!18, rounded corners=2pt},
+    deck/.style={objline, fill=black!8, pattern=north east lines, pattern color=black!25},
+    shelf/.style={draw=black!55, thin, dashed, fill=none},
+    payload/.style={draw=cppgreen!70!black, semithick, fill=cppgreen!15, rounded corners=1.5pt},
+    battery/.style={draw=codeblue!70!black, semithick, fill=codeblue!12, rounded corners=1.5pt},
+    centerline/.style={draw=gray!60, very thin, dash dot},
+    dimline/.style={<->, gray!60, semithick},
+    extline/.style={gray!50, very thin},
+    dimtxt/.style={font=\scriptsize, gray!70!black, fill=white, inner sep=1.2pt},
 ]
 
 % --- Tracks (top view: two long rectangles) ---
-\draw[track] (0,0) rectangle (8.0, 1.0);    % bottom track strip
-\draw[track] (0,4.4) rectangle (8.0, 5.4);  % top track strip
+\draw[track] (0,0)   rectangle (8.0, 1.0);
+\draw[track] (0,4.4) rectangle (8.0, 5.4);
 
 % --- Diamond plate deck between the tracks ---
 \draw[deck] (1.0, 1.0) rectangle (7.0, 4.4);
 
-% --- Sensor shelf outline (projected) — DRAWN BEFORE PAYLOAD/BATTERY ---
-% Translucent so the items beneath remain visible
+% --- Sensor shelf footprint (projected, dashed only — secondary) ---
 \draw[shelf] (1.6, 0.4) rectangle (6.2, 5.0);
+\node[font=\scriptsize, black!60] at (3.9, 5.18) {sensor shelf footprint (23'' $\times$ 23''), 20'' AGL};
 
-% --- Battery (centered on deck) and payload (front, RIGHT) ---
+% --- Battery (centered) and Payload (front) ---
 \draw[battery] (2.7, 1.6) rectangle (4.5, 3.8);
 \node[align=center, font=\scriptsize] at (3.6, 2.7) {48\,V\\Battery};
 
 \draw[payload] (5.1, 1.4) rectangle (6.8, 4.0);
 \node[align=center, font=\scriptsize] at (5.95, 2.7) {Payload\\(20 lb)};
 
-% --- Deck label below the deck (not floating inside) ---
-\node[font=\scriptsize, gray, anchor=north] at (4.0, 0.95) {1/8'' diamond-plate deck};
+% --- Rear E-stop platform (light fill, thin stroke so it doesn't compete with the deck) ---
+\draw[draw=warnred!50, semithick, fill=warnred!7] (-0.9, 1.7) rectangle (0.0, 3.7);
+\node[draw=warnred, circle, fill=warnred!60, minimum size=0.32cm, inner sep=0pt] at (-0.45, 2.7) {};
+\node[font=\scriptsize, anchor=east, align=right] at (-1.0, 2.7) {E-stop\\platform};
+% E-stop leader for the 24"-AGL callout (height info that belongs on this figure)
+\draw[<-, gray!60, thin] (-0.45, 2.95) -- (-0.45, 3.55) -- (-1.5, 3.55);
+\node[font=\scriptsize, gray!70!black, anchor=east] at (-1.5, 3.55) {24'' AGL};
 
-% --- Sensor shelf labels: keep above the figure, away from inner content ---
-\node[cppgreen, font=\scriptsize] at (4.0, 5.18) {Sensor shelf footprint (23'' $\times$ 23''), 20'' AGL};
+% --- Centerline (broken at center to make room for label in the inter-component gap) ---
+\draw[centerline] (-1.05, 2.7) -- (4.55, 2.7);
+\draw[centerline] (5.05, 2.7) -- (7.85, 2.7);
+\node[font=\scriptsize, gray!60!black, fill=white, inner sep=1pt] at (4.80, 2.7) {$\mathit{CL}$};
 
-% --- Rear E-stop platform extension ---
-\draw[thick, fill=warnred!20] (-0.9, 1.7) rectangle (0.0, 3.7);
-\node[draw, circle, fill=warnred, minimum size=0.32cm, inner sep=0pt] at (-0.45, 2.7) {};
-\node[font=\scriptsize, anchor=east, warnred, align=right] at (-1.0, 2.7) {E-stop\\platform};
+% --- Body-frame coordinate marker (corner) ---
+\begin{scope}[shift={(8.3, 0.2)}]
+    \draw[->, black!75, thin] (0,0) -- (0.5,0) node[font=\scriptsize, anchor=west, inner sep=1pt]{$x_b$};
+    \draw[->, black!75, thin] (0,0) -- (0,0.5) node[font=\scriptsize, anchor=south, inner sep=1pt]{$y_b$};
+\end{scope}
 
-% --- Front / rear flow arrow (placed above the upper track to avoid overlap) ---
-\draw[->, gray] (-0.9, 5.85) -- (8.1, 5.85);
-\node[font=\scriptsize\itshape, gray, anchor=south east] at (-0.1, 5.85) {rear};
-\node[font=\scriptsize\itshape, gray, anchor=south west] at (7.3, 5.85) {front};
+% --- Dimension: deck length (30 in), drawn in clean margin BELOW the part ---
+\draw[extline] (1.0, 0.0) -- (1.0, -0.55);
+\draw[extline] (7.0, 0.0) -- (7.0, -0.55);
+\draw[dimline] (1.0, -0.45) -- (7.0, -0.45);
+\node[dimtxt] at (4.0, -0.45) {30'' deck length};
 
-% --- Dimension: deck length (30 in) ---
-\draw[extline] (1.0, 1.0) -- (1.0, -0.05);
-\draw[extline] (7.0, 1.0) -- (7.0, -0.05);
-\draw[dim] (1.0, -0.05) -- (7.0, -0.05);
-\node[dimtxt] at (4.0, -0.05) {30'' deck length};
+% --- Dimension: deck width (21.5 in), drawn in clean margin to the RIGHT of the part ---
+\draw[extline] (7.0, 1.0) -- (9.3, 1.0);
+\draw[extline] (7.0, 4.4) -- (9.3, 4.4);
+\draw[dimline] (9.1, 1.0) -- (9.1, 4.4);
+\node[dimtxt, rotate=-90] at (9.1, 2.7) {21.5'' deck width};
 
-% --- Dimension: deck width (21.5 in) vertical, right side ---
-\draw[extline] (7.0, 1.0) -- (8.7, 1.0);
-\draw[extline] (7.0, 4.4) -- (8.7, 4.4);
-\draw[dim] (8.55, 1.0) -- (8.55, 4.4);
-\node[dimtxt, rotate=-90] at (8.55, 2.7) {21.5'' deck width};
+% --- Dimension: overall length (chassis + E-stop platform), further down in the margin ---
+\draw[extline] (-0.9, 0.0) -- (-0.9, -1.05);
+\draw[extline] (8.0, 0.0)  -- (8.0, -1.05);
+\draw[dimline] (-0.9, -0.95) -- (8.0, -0.95);
+\node[dimtxt] at (3.55, -0.95) {Overall length $\geq 36''$ (meets 3\,ft IGVC min.)};
 
-% --- Dimension: overall length incl. E-stop platform ---
-\draw[extline] (-0.9, 0.0) -- (-0.9, -0.85);
-\draw[extline] (8.0, 0.0) -- (8.0, -0.85);
-\draw[dim] (-0.9, -0.7) -- (8.0, -0.7);
-\node[dimtxt] at (3.5, -0.7) {Overall length $\geq 36''$ (meets 3\,ft IGVC min.)};
-
-% --- Centerline (faint, broken at center to not collide with width label) ---
-\draw[gray, very thin, dash dot] (-1.0, 2.7) -- (7.8, 2.7);
-\node[font=\scriptsize, gray, anchor=center, fill=white, inner sep=1pt] at (4.7, 2.7) {centerline};
+% --- Compact orientation labels above the figure ---
+\node[font=\scriptsize\itshape, gray!70!black] at (0.3, 5.62) {rear};
+\node[font=\scriptsize\itshape, gray!70!black] at (7.7, 5.62) {front};
+\draw[->, gray!70!black, thin] (-0.9, 5.55) -- (8.05, 5.55);
 
 \end{tikzpicture}

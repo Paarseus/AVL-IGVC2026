@@ -1,65 +1,92 @@
-% Two-channel E-stop hardware schematic: mechanical button + wireless receiver
-% feeding a series enable line into the SparkMAX motor controllers.
+% Two-channel E-stop hardware schematic. Color discipline:
+%   - SAFETY-RED reserved for the E-stop break path and hardware-enforced boundary
+%   - Neutral dark gray for ordinary signal/power flow
+%   - Dashed blue for the advisory software-stop path (clearly secondary)
 \begin{tikzpicture}[
     font=\footnotesize,
-    src/.style={draw, rounded corners, fill=warnred!20, minimum width=2.4cm, minimum height=0.85cm, align=center},
-    relay/.style={draw, fill=orange!20, minimum width=1.4cm, minimum height=0.85cm, align=center},
-    ctrl/.style={draw, rounded corners, fill=codeblue!15, minimum width=2.0cm, minimum height=0.85cm, align=center},
-    motor/.style={draw, circle, fill=gray!20, minimum size=0.95cm, inner sep=1pt},
-    batt/.style={draw, rounded corners, fill=warnred!10, minimum width=1.4cm, minimum height=0.7cm, align=center},
-    pwr/.style={-{Stealth[length=2mm]}, very thick, warnred},
-    sig/.style={-{Stealth[length=2mm]}, thick, codeblue},
-    en/.style={-{Stealth[length=2mm]}, thick, orange!80!black},
-    led/.style={draw, fill=cppgreen, regular polygon, regular polygon sides=3, minimum size=0.35cm, inner sep=0pt, rotate=-90},
-    note/.style={font=\scriptsize, gray, align=center},
+    >={Stealth[length=2mm, width=1.5mm]},
+    estop/.style={draw=warnred!80, rounded corners, fill=warnred!12,
+                  minimum width=2.4cm, minimum height=0.95cm, align=center},
+    relay/.style={draw=black!80, rounded corners, fill=orange!18,
+                  minimum width=1.6cm, minimum height=0.95cm, align=center},
+    ctrl/.style={draw=black!80, rounded corners, fill=codeblue!12,
+                  minimum width=2.1cm, minimum height=0.95cm, align=center},
+    motor/.style={draw=black!80, circle, fill=black!10, minimum size=1.0cm,
+                  align=center, inner sep=1pt},
+    batt/.style={draw=black!80, rounded corners, fill=black!8,
+                  minimum width=1.5cm, minimum height=0.8cm, align=center, font=\scriptsize},
+    soft/.style={draw=codeblue!70!black, rounded corners, fill=codeblue!8,
+                  minimum width=2.1cm, minimum height=0.85cm, align=center},
+    safebreak/.style={->, line width=1.6pt, warnred!85},
+    sig/.style={->, semithick, black!70},
+    advise/.style={->, semithick, dashed, codeblue!70!black},
+    led/.style={regular polygon, regular polygon sides=3, draw=cppgreen!70!black,
+                fill=cppgreen!60, minimum size=0.32cm, inner sep=0pt, rotate=-90},
+    hwbox/.style={draw=warnred!70, very thick, rounded corners, dashed},
 ]
 
-% --- Power source ---
-\node[batt] (batt) at (0,0) {48\,V\\battery};
+% ---------- Battery ----------
+\node[batt] (batt) at (0,0) {48\,V battery};
 
-% --- Two E-stop channels in series along the enable line ---
-\node[src, right=1.2cm of batt] (mech) {Mechanical\\E-stop (rear)};
-\node[src, right=0.6cm of mech] (wless) {Wireless\\E-stop receiver};
+% ---------- Two E-stop channels in series ----------
+\node[estop, right=1.0cm of batt] (mech)  {Mechanical\\E-stop (rear)};
+\node[estop, right=0.7cm of mech]  (wless) {Wireless\\E-stop receiver};
 
-% --- Series relay ---
-\node[relay, right=0.6cm of wless] (relay) {Enable\\relay};
+% ---------- Series enable relay ----------
+\node[relay, right=0.7cm of wless] (relay) {Enable\\relay};
 
-% --- Motor controllers ---
-\node[ctrl, right=1.0cm of relay, yshift=0.7cm] (spkL) {SparkMAX L};
-\node[ctrl, right=1.0cm of relay, yshift=-0.7cm] (spkR) {SparkMAX R};
+% ---------- Motor controllers (aligned on a grid relative to relay) ----------
+\node[ctrl, right=1.3cm of relay, yshift= 0.85cm] (spkL) {SparkMAX L};
+\node[ctrl, right=1.3cm of relay, yshift=-0.85cm] (spkR) {SparkMAX R};
 
-% --- Motors ---
-\node[motor, right=0.8cm of spkL] (neoL) {NEO\,L};
-\node[motor, right=0.8cm of spkR] (neoR) {NEO\,R};
+% ---------- Motors (aligned vertically with their SparkMAX) ----------
+\node[motor, right=0.9cm of spkL] (neoL) {NEO\,L};
+\node[motor, right=0.9cm of spkR] (neoR) {NEO\,R};
 
-% --- Power rail (red) ---
-\draw[pwr] (batt.east) -- (mech.west);
-\draw[pwr] (mech.east) -- (wless.west);
-\draw[pwr] (wless.east) -- (relay.west);
+% ---------- Hardware-enforced group BOX (drawn first so it sits behind labels) ----------
+\node[hwbox, fit=(relay)(spkL)(spkR)(neoL)(neoR), inner sep=7pt,
+      label={[font=\scriptsize\bfseries, warnred!80, anchor=north, yshift=-3pt]below:HARDWARE-ENFORCED \textnormal{(software cannot override)}},
+     ] (hwgroup) {};
 
-% --- Enable distributed to both SparkMAX ---
+% ---------- SAFETY-RED power/break path: battery -> mech -> wless -> relay ----------
+\draw[safebreak] (batt.east)  -- (mech.west);
+\draw[safebreak] (mech.east)  -- (wless.west);
+\draw[safebreak] (wless.east) -- (relay.west);
+
+% ---------- Enable distribution: relay fans out to both SparkMAX ----------
 \coordinate (jct) at ($(relay.east)+(0.45,0)$);
-\draw[en] (relay.east) -- (jct);
-\draw[en] (jct) |- (spkL.west);
-\draw[en] (jct) |- (spkR.west);
-\node[font=\scriptsize\bfseries, orange!80!black, above=1pt] at ($(relay.east)!0.55!(jct)$) {EN};
+\draw[safebreak] (relay.east) -- (jct);
+\draw[safebreak] (jct) |- (spkL.west);
+\draw[safebreak] (jct) |- (spkR.west);
+\node[font=\scriptsize\bfseries, warnred!85, above=2pt of jct, inner sep=1pt] {EN};
 
-% --- 3-phase out to motors ---
-\draw[pwr] (spkL.east) -- (neoL.west);
-\draw[pwr] (spkR.east) -- (neoR.west);
+% ---------- 3-phase out to motors (neutral gray, not safety-red) ----------
+\draw[sig] (spkL.east) -- (neoL.west);
+\draw[sig] (spkR.east) -- (neoR.west);
 
-% --- Indicator LEDs (external visibility) ---
-\node[led, above=0.25cm of mech] (led1) {};
-\node[note, above=0.02cm of led1] {ARM};
-\node[led, above=0.25cm of wless] (led2) {};
-\node[note, above=0.02cm of led2] {LINK};
+% ---------- Indicator LEDs above the two E-stop boxes (small, with key beneath) ----------
+\node[led] (led1) at ($(mech.north)+(0,0.30)$) {};
+\node[font=\scriptsize, anchor=south] at (led1.north) {ARMED};
+\node[led] (led2) at ($(wless.north)+(0,0.30)$) {};
+\node[font=\scriptsize, anchor=south] at (led2.north) {LINK};
 
-% --- Software bypass annotation (negative) ---
-\node[draw, dashed, gray, rounded corners, fit=(relay)(spkL)(spkR), inner sep=4pt, label={[font=\scriptsize, gray, anchor=north]below:hardware path --- software cannot override}] {};
+% ---------- Advisory software-stop channel: Jetson into the TOP edge of the hw-group ----------
+\node[soft] (jetson) at ($(hwgroup.north)+(0,1.05)$) {Jetson\\\textit{soft stop}};
+\draw[advise] (jetson.south) -- ($(hwgroup.north)+(0,0)$)
+    node[midway, right=2pt, font=\scriptsize, codeblue!70!black] {advisory only};
 
-% --- Optional Jetson "soft stop" channel (informational, dashed) ---
-\node[ctrl, fill=cppgreen!12, above=1.1cm of relay] (jetson) {Jetson\,(SW stop)};
-\draw[sig, dashed] (jetson.south) -- (relay.north)
-    node[midway, right, font=\scriptsize]{advisory only};
+% ---------- LEGEND strip (bottom-left, compact) ----------
+\node[draw=black!40, very thin, rounded corners=2pt, fill=white, inner sep=3pt,
+      anchor=north west, font=\scriptsize]
+      at ($(batt.south west)+(0,-0.55)$) {
+    \begin{tikzpicture}[baseline=0pt]
+        \draw[safebreak] (0, 0.20) -- (0.7, 0.20);
+        \node[anchor=west, font=\scriptsize] at (0.75, 0.20) {safety break path (red)};
+        \draw[sig]       (0,-0.05) -- (0.7,-0.05);
+        \node[anchor=west, font=\scriptsize] at (0.75,-0.05) {ordinary signal / power};
+        \draw[advise]    (0,-0.30) -- (0.7,-0.30);
+        \node[anchor=west, font=\scriptsize] at (0.75,-0.30) {advisory (software)};
+    \end{tikzpicture}
+};
 
 \end{tikzpicture}
