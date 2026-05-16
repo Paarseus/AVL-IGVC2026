@@ -209,9 +209,11 @@ Figure~\ref{fig:diff_drive_kinematics}.
 \begin{figure}[H]
     \centering
     \input{figures/diff_drive_kinematics.tex}
-    \caption{Three differential-drive operating modes. Arrows indicate track linear
-    velocity; the red dot marks the instantaneous center of rotation. The planner
-    commands all three modes through a single $(v, \omega)$ target.}
+    \caption{Three differential-drive operating modes commanded through a single
+    $(v,\omega)$ target. Blue arrows show each track's linear velocity, with
+    arrow length proportional to $|v|$; the red ringed marker is the
+    instantaneous center of rotation ($\mathrm{ICR}$). Track width $b$ is
+    dimensioned once in panel (a) and is identical for all three panels.}
     \label{fig:diff_drive_kinematics}
 \end{figure}
 
