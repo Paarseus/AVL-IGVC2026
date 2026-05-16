@@ -234,12 +234,12 @@ system architecture.
     \centering
     \begin{tikzpicture}[
         font=\scriptsize,
-        sensor/.style={draw, rounded corners, fill=blue!10, minimum width=2.0cm, minimum height=0.5cm, align=center},
-        block/.style={draw, rounded corners, fill=cppgreen!15, minimum width=2.0cm, minimum height=0.5cm, align=center},
-        hw/.style={draw, rounded corners, fill=orange!15, minimum width=2.0cm, minimum height=0.5cm, align=center},
+        sensor/.style={draw, rounded corners, fill=blue!10, minimum width=1.7cm, minimum height=0.4cm, align=center},
+        block/.style={draw, rounded corners, fill=cppgreen!15, minimum width=1.7cm, minimum height=0.4cm, align=center},
+        hw/.style={draw, rounded corners, fill=orange!15, minimum width=1.7cm, minimum height=0.4cm, align=center},
         layer/.style={font=\scriptsize\itshape\color{gray}, align=right},
-        arr/.style={-{Stealth[length=1.5mm]}, thick},
-        node distance=0.5cm and 0.6cm,
+        arr/.style={-{Stealth[length=1.2mm]}, thick},
+        node distance=0.35cm and 0.45cm,
     ]
         \node[sensor] (vlp) {VLP-16\\3D LiDAR};
         \node[sensor, right=of vlp] (zed) {3$\times$ ZED~X\\stereo cams};
@@ -343,15 +343,8 @@ base selected for its all-terrain traction and short delivery lead time. A recon
 iteration on sensor mounts and shelf geometry through the design cycle. The same chassis
 can host different electronics housings for future competitions; for IGVC~2026 the
 housing is mounted on the upper shelf so that the electronics, payload, and E-stop are
-all readily accessible during operation and inspection. The integrated vehicle is shown
-on the cover page; a rear-three-quarter view is in Figure~\ref{fig:cad_rear}.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.45\linewidth, trim=10 10 10 10, clip]{drafts/mechanical/figures/cad_rear.png}
-    \caption{Rear three-quarter view of \robotname{}; the rear shelf supports the mechanical E-stop and extends the chassis to meet the IGVC 3~ft length minimum.}
-    \label{fig:cad_rear}
-\end{figure}
+all readily accessible during operation and inspection (see cover page for an
+integrated vehicle render).
 
 \subsection{Drivetrain}
 
@@ -370,8 +363,8 @@ uses three operating modes: pivot turn (one track held, robot rotates about the
 stationary contact patch); in-place spin ($v_R = -v_L$, ICR at the vehicle center,
 maximum yaw rate); and gradual curve (both tracks forward, $v_R \neq v_L$).
 
-The full electromechanical signal path (also shown in Figure~\ref{fig:system_arch} and
-Figure~\ref{fig:electrical-block}) is: Jetson Orin issues
+The full electromechanical signal path (also shown in Figure~\ref{fig:system_arch})
+is: Jetson Orin issues
 \texttt{geometry\_msgs/Twist} at 50~Hz over USB serial to the Teensy~4.1; the Teensy
 decomposes commands into per-side wheel velocities and forwards them over CAN at
 1~Mbit/s to the two SparkMAX controllers; each SparkMAX closes a 1~kHz velocity loop
@@ -395,9 +388,8 @@ deck on a 3D-printed cradle. The resulting center of gravity sits slightly forwa
 the track midpoint and low on the deck, minimizing pitch moment on inclines and during
 skid-steer turns. The diamond-plate deck is $21.5'' \times 30''$ and the upper sensor
 shelf is $23'' \times 23'' \times 6''$ mounted 20~in above ground; the rear shelf
-carries the E-stop button at $24''$ (Figure~\ref{fig:cad_rear}). The chassis was
-extended with that rear shelf to satisfy both the IGVC 3~ft minimum length and the
-2--4~ft E-stop mounting requirement.
+carries the E-stop button at $24''$. The chassis was extended with that rear shelf to
+satisfy both the IGVC 3~ft minimum length and the 2--4~ft E-stop mounting requirement.
 
 \begin{table}[H]
     \centering
@@ -476,12 +468,6 @@ it is only released when the team is preparing to test movement. The main power 
 is set OFF when parked overnight. The acrylic panels and weatherstripping protect the
 electronics bay from rain and dust during outdoor parking.
 
-\textbf{Bench testing.} For drivetrain checks (track tension, gearbox inspection, motor
-characterization, encoder calibration), MARVIN is raised onto a workstation so the
-tracks turn freely without translating the vehicle. This eliminates the risk of
-uncommanded motion during firmware tuning and lets the team probe live signals safely
-with the vehicle de-coupled from the floor.
-
 \textbf{Charging.} The 48~V 25~Ah Aegis LiFePO\textsubscript{4} pack remains installed
 in MARVIN during charging; the DC House 48~V 18~A charger connects to a dedicated,
 keyed charge port wired into the vehicle's power system, so reverse-polarity and
@@ -496,23 +482,13 @@ protections, charges are permitted to run unattended.
 
 \subsection{On-Course Safety}
 
-The on-course safety architecture (Figure~\ref{fig:safety_block}) implements a
-hardware-enforced two-channel emergency stop: either the rear-mounted mechanical E-stop
-button or the wireless remote E-stop receiver opens a relay in series with the
-motor-controller enable line. When the relay opens, the SparkMAX controllers immediately
-disable PWM output and brake the NEO motors via the integrated short-brake mode;
-software is not in the loop, so a Jetson hang or ROS crash cannot defeat the stop.
-Indicator LEDs visible from outside the chassis show the armed/disarmed state for the
-IGVC safety inspection.
-
-\begin{figure}[H]
-    \centering
-    \input{drafts/mechanical/figures/safety_block.tex}
-    \caption{Two-channel emergency stop. The mechanical (rear-shelf) and wireless E-stops
-    are wired in series with the motor-enable relay; either one open de-energizes both
-    SparkMAX controllers, independent of software state.}
-    \label{fig:safety_block}
-\end{figure}
+The on-course safety architecture implements a hardware-enforced two-channel emergency
+stop: either the rear-mounted mechanical E-stop button or the wireless remote E-stop
+receiver opens a relay in series with the motor-controller enable line. When the relay
+opens, the SparkMAX controllers immediately disable PWM output and brake the NEO motors
+via the integrated short-brake mode; software is not in the loop, so a Jetson hang or
+ROS crash cannot defeat the stop. Indicator LEDs visible from outside the chassis show
+the armed/disarmed state for the IGVC safety inspection.
 
 In software, the actuator node additionally zeroes \texttt{cmd\_vel} on stale input
 (300~ms watchdog) so a Jetson stall or ROS-node crash defaults the vehicle to a stop
@@ -549,8 +525,9 @@ are malformed.
 \subsection{Overview}
 
 The 2026 electrical architecture is organised into four subsystems: power
-distribution, network and computation, sensing, and motor control.
-Figure~\ref{fig:electrical-block} shows how these subsystems interconnect.
+distribution, network and computation, sensing, and motor control --- shown at the
+system level in Figure~\ref{fig:system_arch} with the actuation chain detailed in the
+``Actuation'' row.
 
 \begin{itemize}
   \item \textbf{Power} --- a 48~V battery feeds two buck converters (12~V and 5~V
@@ -565,6 +542,7 @@ Figure~\ref{fig:electrical-block} shows how these subsystems interconnect.
     two NEO brushless motors (\S\ref{sec:electrical}.3).
 \end{itemize}
 
+\iffalse
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[x=0.85cm, y=0.85cm]
@@ -665,6 +643,7 @@ Figure~\ref{fig:electrical-block} shows how these subsystems interconnect.
 \caption{System-level electrical block diagram.}
 \label{fig:electrical-block}
 \end{figure}
+\fi
 
 \subsection{Power Distribution}
 
@@ -672,28 +651,19 @@ The vehicle is powered by an Aegis 48~V 25~Ah LiFePO\textsubscript{4} deep-cycle
 lithium battery (1.2~kWh nominal). LiFePO\textsubscript{4} chemistry was selected for
 its thermal stability, $\sim$2000-cycle service life, and tolerance to partial-state-of-charge
 operation between practice runs. The battery passes through a main switch into two
-buck converters (also shown in Figure~\ref{fig:electrical-block}): a 12~V / 20~A
+buck converters: a 12~V / 20~A
 converter for the motor controllers and other high-power loads, and a 5~V / 6~A
 converter for the Teensy~4.1 and low-power peripherals. Each rail is split into three
 independently fused output branches (battery $\to$ switch $\to$ buck $\to$ 3 fused
 branches per rail) so a short on one load does not pull down the rest of the vehicle.
 
-\textbf{Run time and recharge.} A 25~Ah pack at 48~V stores $\sim$1200~Wh. Estimated
-nominal load under autonomous operation is $\sim$155~W (Jetson Orin $\sim$30~W,
-VLP-16 LiDAR 8~W, 3$\times$ ZED~X $\sim$9~W, Xsens IMU/GPS 1~W, router 5~W, Teensy
-$<$1~W, drive motors $\sim$100~W average over typical IGVC speeds), which corresponds
-to $\sim$3.2~A at the 48~V bus. Allowing for buck-converter and battery losses
-($\eta_{\text{tot}} \approx 0.85$), the calculated runtime is
-$\sim$1200~Wh~$\times$~0.85~/~155~W~$\approx$~6.5~hours --- two orders of magnitude
-above the 6-minute IGVC II.2 course ceiling and enough for a full practice day on a
-single charge under realistic load.
-
-The pack is recharged with a DC House 48~V 18~A LiFePO\textsubscript{4}
-portable charger (model S-US-L131211800092-1, 58.4~V CV output, 18~A bulk-charge
-current, IP65). At 18~A bulk current, a fully depleted 25~Ah pack reaches $\sim$80\%
-state of charge in $\sim$1.4~hours; with the LiFePO\textsubscript{4} absorption phase
-and cell balancing, a full recharge takes approximately 1.5--2~hours. Charging is
-performed outside the vehicle with the battery disconnected from the drive bus.
+\textbf{Run time and recharge.} The 25~Ah pack at 48~V stores $\sim$1200~Wh. Estimated
+autonomous-mode load is $\sim$155~W (Jetson 30~W, VLP-16 8~W, 3$\times$ ZED~X 9~W,
+Xsens 1~W, router 5~W, drive motors $\sim$100~W avg.) = $\sim$3.2~A at the 48~V bus,
+giving a calculated runtime of $\sim$6.5~hours with $\eta_{\text{tot}} \approx 0.85$
+--- two orders of magnitude above the 6-min IGVC II.2 course ceiling. Recharge with
+the DC House 48~V 18~A LiFePO\textsubscript{4} charger (S-US-L131211800092-1, 58.4~V
+CV, IP65) takes $\sim$1.5--2~hours from empty with absorption and cell balancing.
 
 \subsection{Motor Control}
 
@@ -1095,9 +1065,16 @@ Physical testing progresses through four stages: bench (subsystem in isolation),
 simulation (Webots full stack), low-speed field tests on a flat surface, and full-speed
 field tests on the IGVC practice course.
 
-\placeholder{Identify the key differences observed between simulation and the
-real-world test course (e.g., GPS noise floor, lighting variance vs. Webots, suspension
-dynamics not modeled in Webots). Describe how the test data drove parameter changes.}
+A timed full-course sim-versus-field comparison has not yet been completed. Four
+sim-vs-real gaps already drive specific design decisions: (i)~Webots GPS is
+noise-free vs.\ $\pm 2$--5~m on field (differential GPS fusion + 6$\sigma$ outlier
+rejection, \S6.2); (ii)~uniform sim lighting vs.\ outdoor sun-angle/reflectivity
+variation (runtime HSV auto-calibration, \S5.2); (iii)~Webots physics does not model
+track-suspension yaw drift and IMU vibration (IMU heading-hold, \S6.3); (iv)~USB-serial
+and CAN latencies are deterministic in sim but bounded on hardware by the 300~ms
+watchdog and 100~ms CAN heartbeat (\S4.3). A timed full-course Webots run is planned,
+after which costmap inflation and MPPI critic weights will be retuned to close the
+residual gap.
 
 % =============================================================================
 % IGVC 2026 §11 -- CYBER SECURITY ANALYSIS
@@ -1105,39 +1082,83 @@ dynamics not modeled in Webots). Describe how the test data drove parameter chan
 \section{Cyber Security Analysis}
 \label{sec:cyber}
 
-Modern robotic and human-driven vehicles are network-connected, contain large amounts
-of software from multiple vendors, and are an inviting target for cyber-attacks. Per
-IGVC 2026 rule IV.3 \S11, we list three cyber vulnerabilities present in our vehicle
-and discuss the steps that should be taken to harden or remove them before the system
-enters series production.
+Per IGVC 2026 rule IV.3 \S11, we identify three cyber vulnerabilities present in
+\robotname{} and the hardening steps required before the platform enters series
+production. The analysis follows the ISO/SAE~21434 Threat Analysis and Risk Assessment
+(TARA) method for road-vehicle cybersecurity engineering, with control selections drawn
+from NIST~SP~800-82~Rev.~3\footnote{NIST SP 800-82r3, \emph{Guide to Operational
+Technology Security} (2023). Operational-technology baseline is a closer fit to a
+robotic ground vehicle than the IT-oriented NIST SP 800-53.} and threats classified
+under STRIDE.
 
-\begin{table}[H]
-    \centering
-    \footnotesize
-    \caption{Top three cyber vulnerabilities and hardening steps.}
-    \begin{tabularx}{\textwidth}{l X X}
-        \toprule
-        \textbf{Vulnerability} & \textbf{Risk} & \textbf{Hardening / Remediation} \\
-        \midrule
-        Onboard network breach
-        & Wi-Fi foothold exposes the ROS~2 discovery service (unauthenticated by default), allowing \texttt{cmd\_vel} injection.
-        & Dedicated subnet with WPA2 (SC-7); CycloneDDS Security with X.509 identities and access-control governance (AC-3). \\
-        \addlinespace
-        WebSocket joystick hijack
-        & The \texttt{avros\_webui} WebSocket can override autonomous \texttt{cmd\_vel} from a local-network attacker.
-        & WSS with pinned cert; session token at pair time; fail-safe disconnect $\to$ E-stop (AC-3, IA-2). \\
-        \addlinespace
-        GPS spoofing / multipath
-        & Spoofed GPS could feed the global EKF a false position, advancing the waypoint cursor prematurely.
-        & Differential GPS fusion (per-step deltas); 6$\sigma$ Mahalanobis outlier rejection (SI-4, SI-7); cross-check GPS heading vs IMU heading. \\
-        \bottomrule
-    \end{tabularx}
-\end{table}
+Trust boundaries on the vehicle separate (i)~the autonomy compute (Jetson Orin running
+ROS~2 Humble), (ii)~the safety-rated motion subsystem (Teensy~4.1 plus SparkMAX over
+CAN), (iii)~the operator interface (\texttt{avros\_webui} on Wi-Fi), and (iv)~external
+GNSS / RTK infrastructure. The three vulnerabilities below carry the highest residual
+risk after the existing safety controls are applied; each is paired with the
+production-grade hardening required to retire it.
 
-In addition to the three vulnerabilities above, safety-critical motion is gated by
-three independent stop mechanisms (physical E-stop, wireless E-stop, software interlock
-in the actuator node) so a single cyber-compromise of the autonomy stack does not by
-itself produce uncontrolled motion --- the hardware relay must be re-enabled by a human
-operator.
+\subsection{V1: ROS 2 / DDS Exposure on the Operator LAN \emph{(S, T, D)}}
+
+\textbf{Today on the competition vehicle.} The autonomy stack runs Cyclone~DDS on the
+default domain with discovery multicast on every detected interface and no SROS~2
+enclaves. Any host on the LAN can publish \texttt{/cmd\_vel} or
+\texttt{/avros/actuator\_command} directly. CVE-2024-28231 (Fast-DDS heap overflow via
+crafted RTPS submessages) and the SROS~2 access-control bypass disclosed by Deng
+et~al.\ (ACM CCS~2022) establish prior art for both DoS and remote code execution
+against an unhardened DDS bus.
+
+\textbf{Production-grade hardening.} SROS~2 with per-node enclaves and X.509 identities
+issued from an offline CA (NIST IA-5); FastDDS pinned to $\geq$\,2.14.0 with multicast
+egress disabled; ROS~2 traffic confined to a dedicated VLAN whose WPA3-SAE wireless
+segment is firewalled from the operator-laptop network (SC-7, AC-4).
+
+\subsection{V2: Unauthenticated Drive-by-Wire and Telemetry Leak on the Web UI \emph{(S, I, E)}}
+
+\textbf{Today on the competition vehicle.} The \texttt{avros\_webui} FastAPI server
+binds \texttt{0.0.0.0:8000} with no token, no CORS check, and
+\texttt{max\_throttle\,=\,1.0}; the first WebSocket client to reach \texttt{/ws}
+acquires the controller lock and publishes joystick commands directly to the actuator
+node. In parallel the Foxglove bridge on TCP~8765 streams every topic --- including
+raw \texttt{NavSatFix} --- in cleartext to any LAN peer.
+
+\textbf{Production-grade hardening.} Mutual-TLS WebSocket (WSS) with operator-bound
+client certificates (IA-2, IA-5); short-lived session tokens issued by the safety
+controller and rotated per run; per-frame heartbeat watchdog enforced \emph{at the
+server} rather than only downstream at the actuator node; Foxglove restricted to
+localhost or wrapped in an authenticated reverse proxy with topic allow-listing (AC-3,
+AU-9).
+
+\subsection{V3: GNSS Spoofing and Unauthenticated RTCM Corrections \emph{(S, T)}}
+
+\textbf{Today on the competition vehicle.} The MTi-680G consumes RTCM3 corrections
+from a public NTRIP caster over plain TCP; an on-path attacker can inject crafted
+corrections, and a software-defined-radio attacker within $\sim$100~m can spoof L1
+GPS. JammerTest~2024 and the RTKiller demonstration (arXiv:2406.07565) show that
+commodity SDR hardware now defeats RTK base-station authenticity. Today the EKF gates
+inputs with a 6$\sigma$ Mahalanobis filter and \texttt{differential:~true} integration
+on \texttt{/odometry/gps}, which limits but does not eliminate slow-drift spoofing.
+
+\textbf{Production-grade hardening.} Multi-frequency, multi-constellation receiver
+with Receiver Autonomous Integrity Monitoring (RAIM); NTRIP corrections fetched only
+over TLS from an authenticated caster (SC-8, SC-12); a hard plausibility gate that
+halts waypoint advance whenever GNSS-derived position deviates from the
+IMU/wheel-odometry dead-reckoned estimate by more than the EKF's 3$\sigma$ envelope
+(SI-4, SI-7).
+
+\subsection{Defense in Depth and Production Roadmap}
+
+A successful compromise of any single layer above cannot independently produce
+uncontrolled motion. Safety-critical actuation is gated by three independent stop
+mechanisms --- a physical E-stop button on the vehicle's rear, a wireless E-stop relay
+held by the judges during competition runs, and a software interlock in
+\texttt{actuator\_node} that zeroes \texttt{cmd\_vel} on input older than 500~ms ---
+and manual operator commands always take priority over autonomous \texttt{cmd\_vel}.
+The hardware relay, once tripped, must be re-enabled by a human. The series-production
+roadmap adds a dedicated safety-monitor MCU with an authenticated CAN link to the
+motor controllers, signed firmware images verified at boot (SI-7), an SBOM with
+signed-commit and branch-protection policy on the source repository (SR-3, SR-11), and
+an ISO/SAE~21434-conformant Cybersecurity Management System (CSMS) as required by
+UNECE WP.29~R155 for road deployment of the underlying platform.
 
 \end{document}
