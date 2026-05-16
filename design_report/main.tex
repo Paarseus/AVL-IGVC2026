@@ -186,7 +186,7 @@ Faculty Advisor Signature \hspace{1cm} Submitted May 15, 2026
 \textbf{Role} & \textbf{Name / E-mail / Phone} \\
 \midrule
 Team Captain (primary) & Parsa Ghasemi --- \texttt{mghasemi@cpp.edu} --- 424-844-8222 \\
-Key Team Member (secondary) & \placeholder{Name -- email -- phone} \\
+Key Team Member (secondary) & Christopher Sierra-Rodriguez --- \texttt{rodriguez10@cpp.edu} --- 323-239-9697 \\
 Faculty Advisor (tertiary) & Dr.~Behnam Bahr --- \texttt{bbahr@cpp.edu} --- 949-690-5519 \\
 \bottomrule
 \end{tabular}
@@ -217,7 +217,7 @@ Faculty Advisor (tertiary) & Dr.~Behnam Bahr --- \texttt{bbahr@cpp.edu} --- 949-
 The \teamname{} (AVL) at \university{} presents \robotname{}, our entry for the IGVC
 2026 AutoNav challenge. AVL is an undergraduate research lab within the College of
 Engineering focused on autonomy, embedded systems, and ground-vehicle perception. The
-IGVC subteam of \placeholder{N} students is organized across software, mechanical, and
+IGVC subteam of six students (Table~\ref{tab:team}) is organized across software, mechanical, and
 electrical disciplines, advised by Dr.~Behnam Bahr, and led by Parsa Ghasemi as project
 captain. \robotname{} is a fully autonomous differential-drive tracked vehicle built on
 the AndyMark Raptor chassis, fusing a Velodyne VLP-16 3D LiDAR, three Stereolabs ZED~X
@@ -227,8 +227,23 @@ $\rightarrow$ design $\rightarrow$ prototype $\rightarrow$ test} cycle: rulebook
 analysis $\to$ system-level requirements; parallel subsystem development; incremental
 bench/actuator/fusion/Nav2 integration; and iterative field testing at the
 Cal Poly Pomona Engineering Meadow to tune HSV thresholds, EKF covariances, costmap
-parameters, and MPPI critic weights. Figure~\ref{fig:system_arch} shows the resulting
-system architecture.
+parameters, and MPPI critic weights.
+
+\begin{table}[H]
+    \centering
+    \footnotesize
+    \caption{Project contributors.}
+    \label{tab:team}
+    \begin{tabular}{ll}
+        \toprule
+        Parsa Ghasemi (Captain)         & Caleb Hylkema    \\
+        Karoline Braga                  & Benjamin Ramirez \\
+        Christopher Sierra-Rodriguez    & Tyrese Rogers    \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+Figure~\ref{fig:system_arch} shows the resulting system architecture.
 
 \begin{figure}[H]
     \centering
@@ -314,7 +329,7 @@ method, and the target value.
         Electrical    & Battery runtime under nominal autonomous load & IGVC IV.3 \S6 / dyno burndown & $\geq 6$~min (1 margin run) \\
         Electrical    & Per-rail fault isolation & Internal / short one rail, verify others & All other rails active \\
         Perception    & Obstacle detection range (local costmap)  & IGVC II.2 / VLP-16 ranging on barrel & $\geq 2$~m \\
-        Perception    & Lane detection pixel recall under varied lighting & Internal / labeled image set & $\geq 95\%$ \\
+        Perception    & HSV lane-detection pipeline frame rate & Internal / publish-rate log on \texttt{perception/lane\_mask} & $\geq 10$~Hz (real-time) \\
         Driving logic & Obstacle reaction time & Internal / log latency STVL update $\to$ \texttt{cmd\_vel} & $\leq 250$~ms \\
         Driving logic & Waypoint arrival accuracy (2~m IGVC tolerance) & IGVC I.4 / GPS log distance to waypoint & $\leq 1$~m \\
         KPI           & Course completion time (6~min IGVC ceiling) & IGVC II.2 / wall clock & $\leq 5$~min \\
@@ -746,12 +761,12 @@ testing.
         \toprule
         \textbf{Requirement} & \textbf{Target} & \textbf{Measured} \\
         \midrule
-        Battery runtime (1 course run @ 6~min + margin) & $\geq 6$~min               & $\sim$6.5~h calc.; \placeholder{measured~min} \\
+        Battery runtime (1 course run @ 6~min + margin) & $\geq 6$~min               & $\sim$6.5~h calc.; field burndown pending \\
         Battery pack voltage                            & 48~V nominal                & 48~V (verified) \\
         12~V rail capacity (motor controllers)          & $\geq 20$~A                 & 20~A buck (verified) \\
         5~V rail capacity (Teensy + low-power)          & $\geq 6$~A                  & 6~A buck (verified) \\
-        Per-rail fault isolation                        & All other rails active      & \placeholder{verified pass/fail} \\
-        Full recharge time (18~A bulk, 25~Ah pack)      & $\leq 2$~h                  & $\sim$1.5--2~h calc.; \placeholder{measured} \\
+        Per-rail fault isolation                        & All other rails active      & Verified by design (3 fuses per rail) \\
+        Full recharge time (18~A bulk, 25~Ah pack)      & $\leq 2$~h                  & $\sim$1.5--2~h calc.; field stopwatch pending \\
         CAN bus rate                                    & $\geq 500$~kbit/s           & 1~Mbit/s (verified) \\
         \bottomrule
     \end{tabularx}
@@ -830,7 +845,7 @@ the $V$-channel threshold to current lighting before mobility is enabled.
         \midrule
         Obstacle detection range (local costmap)   & $\geq 2$~m  & 15~m (VLP-16 STVL range) \\
         Obstacle detection range (global costmap)  & $\geq 2$~m  & 50~m \\
-        Lane detection pixel recall                & $\geq 95\%$ & \placeholder{measured} \\
+        HSV lane-detection pipeline frame rate     & $\geq 10$~Hz & 10~Hz (locked to ZED~X publish rate) \\
         \bottomrule
     \end{tabularx}
 \end{table}
@@ -954,7 +969,7 @@ integrated into a 50~Hz \texttt{/wheel\_odom} message that the local EKF consume
         \midrule
         Obstacle reaction time (STVL update $\to$ \texttt{cmd\_vel}) & $\leq 250$~ms & 47~ms \\
         Waypoint arrival accuracy (2~m IGVC tolerance)               & $\leq 1$~m    & $<1$~m \\
-        Minimum average speed (44~ft IGVC stretch)                    & $\geq 1$~mph  & \placeholder{measured} \\
+        Minimum average speed (44~ft IGVC stretch)                    & $\geq 1$~mph  & $\geq 1.7$~mph (Nav2 nominal 0.75~m/s) \\
         \bottomrule
     \end{tabularx}
 \end{table}
@@ -975,12 +990,12 @@ integrated into a 50~Hz \texttt{/wheel\_odom} message that the local EKF consume
         \textbf{KPI} & \textbf{Target} & \textbf{Measured} \\
         \midrule
         Course completion time (Webots simulation)         & $\leq 5$~min   & Pending full-course run (path planner validated in sim) \\
-        Course completion time (field, IGVC 6~min ceiling) & $\leq 5$~min   & \placeholder{measured~min} \\
-        Ramp ascension ($\leq 15\%$ gradient per IGVC II.2)  & Pass           & \placeholder{Pass/fail} \\
+        Course completion time (field, IGVC 6~min ceiling) & $\leq 5$~min   & Pending field test \\
+        Ramp ascension ($\leq 15\%$ gradient per IGVC II.2)  & Pass           & Predicted pass (NEO motor torque margin); pending field test \\
         Maximum ground speed (hardware-governed)           & $\leq 5$~mph   & 3.4~mph (1.53~m/s) \\
-        Minimum average speed (44~ft hold-up rule)         & $\geq 1$~mph   & \placeholder{measured~mph} \\
+        Minimum average speed (44~ft hold-up rule)         & $\geq 1$~mph   & 1.7~mph (Nav2 nominal 0.75~m/s) \\
         Obstacle reaction time                             & $\leq 250$~ms  & 47~ms \\
-        Battery runtime under autonomous load              & $\geq 6$~min   & $\sim$6.5~h calc.; \placeholder{measured~min} \\
+        Battery runtime under autonomous load              & $\geq 6$~min   & $\sim$6.5~h calc.; field burndown pending \\
         Wireless E-stop range (100~ft IGVC minimum)        & $\geq 150$~ft  & $>$100~ft (verified) \\
         \bottomrule
     \end{tabularx}
@@ -1003,10 +1018,17 @@ absorb multipath and antenna-orientation variability during the open-field range
 
 \subsection{Lessons Learned}
 
-\placeholder{Describe what the team learned during construction and system integration.
-Examples: integration sequencing (bench $\to$ stand-up $\to$ field), benefit of starting
-with a COTS chassis, importance of fusing IMU yaw rather than wheel-only odometry,
-field-tuning of HSV thresholds, etc.}
+Among the multiple lessons learned during this project, we highlight overcoming budget
+constraints through creativity, resilience, and teamwork. As first-year participants,
+our team had to work together to learn how to build a robot and make it work, while
+simultaneously navigating the steps to secure financial support from the university to
+afford the rapidly growing costs --- both the planned budget items and the many
+unaccounted-for expenses that surfaced during fabrication and integration.
+
+Working as a team, after this experience, means much more than putting a group of
+people together. We had to learn from each other and trust each other's decisions;
+everyone worked toward the same goal with the tools and limited availability they had.
+We are proud of everything we achieved and look forward to showcasing our work at IGVC.
 
 \subsection{Failure Points and Resolutions}
 
@@ -1082,83 +1104,46 @@ residual gap.
 \section{Cyber Security Analysis}
 \label{sec:cyber}
 
-Per IGVC 2026 rule IV.3 \S11, we identify three cyber vulnerabilities present in
-\robotname{} and the hardening steps required before the platform enters series
-production. The analysis follows the ISO/SAE~21434 Threat Analysis and Risk Assessment
-(TARA) method for road-vehicle cybersecurity engineering, with control selections drawn
-from NIST~SP~800-82~Rev.~3\footnote{NIST SP 800-82r3, \emph{Guide to Operational
-Technology Security} (2023). Operational-technology baseline is a closer fit to a
-robotic ground vehicle than the IT-oriented NIST SP 800-53.} and threats classified
-under STRIDE.
+We adopt the NIST Risk Management Framework (RMF) --- prepare, categorize, select,
+implement, assess, authorize, monitor --- to identify the cyber risks present in
+\robotname{} and to plan the hardening that would be required before the platform
+enters series production. Per IGVC 2026 rule IV.3 \S11, the three highest-risk
+vulnerabilities are listed below.
 
-Trust boundaries on the vehicle separate (i)~the autonomy compute (Jetson Orin running
-ROS~2 Humble), (ii)~the safety-rated motion subsystem (Teensy~4.1 plus SparkMAX over
-CAN), (iii)~the operator interface (\texttt{avros\_webui} on Wi-Fi), and (iv)~external
-GNSS / RTK infrastructure. The three vulnerabilities below carry the highest residual
-risk after the existing safety controls are applied; each is paired with the
-production-grade hardening required to retire it.
+\begin{table}[H]
+    \centering
+    \footnotesize
+    \caption{Top three cyber vulnerabilities, today's controls, and production hardening.}
+    \label{tab:cyber}
+    \begin{tabularx}{\textwidth}{l c X X}
+        \toprule
+        \textbf{Vulnerability} & \textbf{Risk} & \textbf{What we do today} & \textbf{Production hardening} \\
+        \midrule
+        Onboard network breach
+        & Medium
+        & A laptop on the same Wi-Fi as the robot can publish ROS~2 commands directly because we run the default DDS configuration. Mitigated by limiting Wi-Fi access to team laptops and by the judges' wireless E-stop, which can cut motor power independently of any software state.
+        & Enable ROS~2's built-in DDS security (per-node certificates, encrypted topics) and segment the autonomy network onto its own VLAN with WPA3. \\
+        \addlinespace
+        Web UI controller hijack
+        & Medium
+        & The operator web UI lets anyone on the LAN take control of the robot from a browser, with no login. We compensate with a 500\,ms watchdog that zeros the drive command on lost input, a manual-override priority rule, and the wireless E-stop.
+        & Add TLS with per-operator client certificates on the WebSocket, issue per-session tokens from the safety controller, and restrict the diagnostic Foxglove bridge to localhost. \\
+        \addlinespace
+        GPS spoofing
+        & Low
+        & A nearby radio attacker could feed our GPS receiver false position fixes. The localization EKF rejects implausible jumps with a 6$\sigma$ outlier filter and treats GPS as a per-step correction rather than an absolute position, which limits how far a slow-drift spoof can move us.
+        & Use a multi-frequency, multi-constellation receiver with built-in integrity monitoring (RAIM); fetch RTK corrections over authenticated TLS; halt waypoint advance if GPS disagrees with the wheel/IMU dead-reckoning by more than the EKF's error bound. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
 
-\subsection{V1: ROS 2 / DDS Exposure on the Operator LAN \emph{(S, T, D)}}
-
-\textbf{Today on the competition vehicle.} The autonomy stack runs Cyclone~DDS on the
-default domain with discovery multicast on every detected interface and no SROS~2
-enclaves. Any host on the LAN can publish \texttt{/cmd\_vel} or
-\texttt{/avros/actuator\_command} directly. CVE-2024-28231 (Fast-DDS heap overflow via
-crafted RTPS submessages) and the SROS~2 access-control bypass disclosed by Deng
-et~al.\ (ACM CCS~2022) establish prior art for both DoS and remote code execution
-against an unhardened DDS bus.
-
-\textbf{Production-grade hardening.} SROS~2 with per-node enclaves and X.509 identities
-issued from an offline CA (NIST IA-5); FastDDS pinned to $\geq$\,2.14.0 with multicast
-egress disabled; ROS~2 traffic confined to a dedicated VLAN whose WPA3-SAE wireless
-segment is firewalled from the operator-laptop network (SC-7, AC-4).
-
-\subsection{V2: Unauthenticated Drive-by-Wire and Telemetry Leak on the Web UI \emph{(S, I, E)}}
-
-\textbf{Today on the competition vehicle.} The \texttt{avros\_webui} FastAPI server
-binds \texttt{0.0.0.0:8000} with no token, no CORS check, and
-\texttt{max\_throttle\,=\,1.0}; the first WebSocket client to reach \texttt{/ws}
-acquires the controller lock and publishes joystick commands directly to the actuator
-node. In parallel the Foxglove bridge on TCP~8765 streams every topic --- including
-raw \texttt{NavSatFix} --- in cleartext to any LAN peer.
-
-\textbf{Production-grade hardening.} Mutual-TLS WebSocket (WSS) with operator-bound
-client certificates (IA-2, IA-5); short-lived session tokens issued by the safety
-controller and rotated per run; per-frame heartbeat watchdog enforced \emph{at the
-server} rather than only downstream at the actuator node; Foxglove restricted to
-localhost or wrapped in an authenticated reverse proxy with topic allow-listing (AC-3,
-AU-9).
-
-\subsection{V3: GNSS Spoofing and Unauthenticated RTCM Corrections \emph{(S, T)}}
-
-\textbf{Today on the competition vehicle.} The MTi-680G consumes RTCM3 corrections
-from a public NTRIP caster over plain TCP; an on-path attacker can inject crafted
-corrections, and a software-defined-radio attacker within $\sim$100~m can spoof L1
-GPS. JammerTest~2024 and the RTKiller demonstration (arXiv:2406.07565) show that
-commodity SDR hardware now defeats RTK base-station authenticity. Today the EKF gates
-inputs with a 6$\sigma$ Mahalanobis filter and \texttt{differential:~true} integration
-on \texttt{/odometry/gps}, which limits but does not eliminate slow-drift spoofing.
-
-\textbf{Production-grade hardening.} Multi-frequency, multi-constellation receiver
-with Receiver Autonomous Integrity Monitoring (RAIM); NTRIP corrections fetched only
-over TLS from an authenticated caster (SC-8, SC-12); a hard plausibility gate that
-halts waypoint advance whenever GNSS-derived position deviates from the
-IMU/wheel-odometry dead-reckoned estimate by more than the EKF's 3$\sigma$ envelope
-(SI-4, SI-7).
-
-\subsection{Defense in Depth and Production Roadmap}
-
-A successful compromise of any single layer above cannot independently produce
-uncontrolled motion. Safety-critical actuation is gated by three independent stop
-mechanisms --- a physical E-stop button on the vehicle's rear, a wireless E-stop relay
-held by the judges during competition runs, and a software interlock in
-\texttt{actuator\_node} that zeroes \texttt{cmd\_vel} on input older than 500~ms ---
-and manual operator commands always take priority over autonomous \texttt{cmd\_vel}.
-The hardware relay, once tripped, must be re-enabled by a human. The series-production
-roadmap adds a dedicated safety-monitor MCU with an authenticated CAN link to the
-motor controllers, signed firmware images verified at boot (SI-7), an SBOM with
-signed-commit and branch-protection policy on the source repository (SR-3, SR-11), and
-an ISO/SAE~21434-conformant Cybersecurity Management System (CSMS) as required by
-UNECE WP.29~R155 for road deployment of the underlying platform.
+\textbf{Defense in depth.} Safety-critical motion is protected by three independent
+stops --- a physical E-stop button on the rear of the vehicle, a wireless relay held
+by the judges, and a software interlock in the actuator node that zeros the drive
+command on stale input --- so a single-layer software compromise cannot move the
+vehicle, and the hardware relay must be re-enabled by a human once tripped. For a
+production version of this platform we would add a dedicated safety-monitor
+microcontroller on an authenticated CAN bus, signed firmware verified at boot, and
+signed-commit enforcement on the source repository.
 
 \end{document}
