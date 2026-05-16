@@ -462,11 +462,37 @@ $360^\circ$ field of view unobstructed; the ZED~X cameras sit behind AR-coated w
 
 \subsection{Transport, Parked, and Charging Safety}
 
-\placeholder{Describe transport tie-downs, parked-state interlocks, and battery
-charging procedures. Required items per IGVC 2026 rule IV.3 \S5: how the robot is
-secured during transport; how the motor controllers are de-energized when parked; and
-the safety procedure used during battery charging (cutoff thresholds, charger isolation
-from drive bus, location, and supervision).}
+\textbf{Transport.} MARVIN is moved between the lab and the Cal Poly Pomona Engineering
+Meadow under manual control via the AVROS web UI joystick over Wi-Fi; the software
+E-stop in the actuator node is armed throughout transit, and autonomous mode is never
+enabled outside the test area. For the long-haul trip to the IGVC competition venue at
+Oakland University, MARVIN is loaded into a cargo van and secured with ratchet straps
+anchored to the 80/20 frame and diamond-plate deck so it cannot shift, tip, or roll
+during the drive.
+
+\textbf{Parked.} The mechanical E-stop is latched (pushed in) by default whenever
+MARVIN is not actively running, both between practice runs and during long-term storage;
+it is only released when the team is preparing to test movement. The main power switch
+is set OFF when parked overnight. The acrylic panels and weatherstripping protect the
+electronics bay from rain and dust during outdoor parking.
+
+\textbf{Bench testing.} For drivetrain checks (track tension, gearbox inspection, motor
+characterization, encoder calibration), MARVIN is raised onto a workstation so the
+tracks turn freely without translating the vehicle. This eliminates the risk of
+uncommanded motion during firmware tuning and lets the team probe live signals safely
+with the vehicle de-coupled from the floor.
+
+\textbf{Charging.} The 48~V 25~Ah Aegis LiFePO\textsubscript{4} pack remains installed
+in MARVIN during charging; the DC House 48~V 18~A charger connects to a dedicated,
+keyed charge port wired into the vehicle's power system, so reverse-polarity and
+wrong-connector incidents are mechanically impossible. The charger is rated IP65 with
+built-in overheat, overcurrent, overvoltage, reverse-polarity, and short-circuit
+protections, and LiFePO\textsubscript{4} chemistry is intrinsically thermally stable
+and non-volatile compared to NMC lithium --- eliminating the runaway-fire risk
+associated with most lithium-ion packs. All charging is performed in the lab (not at
+the competition venue, where the team operates exclusively on pre-charged batteries)
+with a fire extinguisher within reach; because of the chemistry and charger
+protections, charges are permitted to run unattended.
 
 \subsection{On-Course Safety}
 
