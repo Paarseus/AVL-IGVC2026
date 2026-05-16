@@ -372,6 +372,12 @@ the electrical BOM.}
 
 \vspace{0.5em}
 
+\textbf{Firmware.} The Teensy 4.1 translates ASCII RPM commands into SparkMAX CAN velocity
+setpoints at 1~Mbit/s and echoes encoder feedback at 50~Hz. Three independent timeouts
+protect the drivetrain: a 300~ms serial watchdog on the Teensy, a 100~ms CAN heartbeat
+timeout per SparkMAX, and a firmware clamp of $\pm$4600~RPM (1.53~m/s ground speed, below
+the 5~mph IGVC cap).
+
 Recommended subsections (following Sooner Robotics 2025):
 \begin{itemize}
     \item \textbf{5.1 Overview} --- electronic suite block diagram
@@ -563,12 +569,6 @@ override). Each control loop tick at 50~Hz:
 
 In parallel, the actuator node integrates wheel encoder feedback into a 50~Hz
 \texttt{/wheel\_odom} \texttt{nav\_msgs/Odometry} message that the local EKF consumes.
-
-\textbf{Firmware.} The Teensy 4.1 translates ASCII RPM commands into SparkMAX CAN velocity
-setpoints at 1~Mbit/s and echoes encoder feedback at 50~Hz. Three independent timeouts
-protect the drivetrain: a 300~ms serial watchdog on the Teensy, a 100~ms CAN heartbeat
-timeout per SparkMAX, and a firmware clamp of $\pm$4600~RPM (1.53~m/s ground speed, below
-the 5~mph IGVC cap).
 
 \subsection{Simulation}
 

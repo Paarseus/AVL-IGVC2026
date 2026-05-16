@@ -1,0 +1,1111 @@
+% ============================================================================
+% IGVC 2026 Design Report
+% Cal Poly Pomona Autonomous Vehicle Laboratory
+%
+% Structure follows the IGVC 2026 mandatory format (rule IV.3):
+%   Cover Page (title page) | Optional TOC | 1. System & Subsystem Requirements
+%   | 2. Mechanical | 3. Safety | 4. Electrical/Electronic | 5. Perception
+%   | 6. Driving Logic | 7. KPIs | 8. Analysis of Complete Vehicle
+%   | 9. Cyber Security Analysis
+% ============================================================================
+\documentclass[12pt, letterpaper]{article}
+
+% --- Packages ----------------------------------------------------------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=0.85in,top=0.9in,bottom=0.9in]{geometry}
+\usepackage{graphicx}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage[parfill]{parskip}
+\setlength{\parskip}{3pt plus 1pt minus 1pt}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usepackage{pdfpages}
+\usepackage{multirow}
+
+\usetikzlibrary{shapes.geometric, shapes.misc, arrows.meta, positioning, fit, calc, backgrounds, decorations.pathreplacing, patterns}
+
+% --- Colors ------------------------------------------------------------------
+\definecolor{cppgreen}{RGB}{0,100,60}
+\definecolor{cppdarkgreen}{RGB}{0,75,35}
+\definecolor{cppgold}{RGB}{198,166,84}
+\definecolor{codeblue}{RGB}{0, 80, 160}
+\definecolor{warnred}{RGB}{180, 40, 40}
+\definecolor{lightgray}{RGB}{230, 230, 230}
+
+% Electrical block diagram palette (Paul Tol bright)
+\definecolor{bus48v} {HTML}{EE6677}
+\definecolor{bus12v} {HTML}{228833}
+\definecolor{bus5v}  {HTML}{4477AA}
+\definecolor{buseth} {HTML}{66CCEE}
+\definecolor{buscan} {HTML}{CCBB44}
+\definecolor{buspcie}{HTML}{AA3377}
+\definecolor{busgmsl}{HTML}{EE7733}
+\definecolor{bususb} {HTML}{332288}
+
+% Electrical subsystem pane tints
+\definecolor{zoneA}{HTML}{F4E8E8}   % power      — pale warm
+\definecolor{zoneB}{HTML}{E8EEF6}   % compute    — pale blue
+\definecolor{zoneC}{HTML}{EAF1EA}   % motor      — pale green
+\definecolor{zoneD}{HTML}{F8EFE6}   % sensing    — pale orange
+
+% Electrical TikZ styles
+\tikzset{
+  elblock/.style={
+    draw=black!55, line width=0.6pt, rounded corners=2pt,
+    rectangle, minimum height=10mm, minimum width=22mm,
+    align=center, inner sep=3pt, fill=white,
+    font=\sffamily\footnotesize, text=black!85
+  },
+  elblocksm/.style={
+    draw=black!55, line width=0.6pt, rounded corners=2pt,
+    rectangle, minimum height=10mm, minimum width=16mm,
+    align=center, inner sep=3pt, fill=white,
+    font=\sffamily\footnotesize, text=black!85
+  },
+  elmotor/.style={
+    draw=black!55, line width=0.6pt, circle, minimum size=9mm,
+    align=center, fill=white,
+    font=\sffamily\footnotesize, text=black!85
+  },
+  elpblock/.style={
+    draw=black!55, line width=0.6pt, rounded corners=2pt,
+    rectangle, minimum height=11mm, minimum width=26mm,
+    align=center, inner sep=3pt, fill=white,
+    font=\sffamily\footnotesize, text=black!85
+  },
+  elfuse/.style={
+    draw=black!55, line width=0.6pt, rounded corners=1pt,
+    rectangle, minimum height=8mm, minimum width=4mm, fill=white
+  },
+  elterm/.style={
+    draw=black!55, line width=0.6pt, circle, minimum size=2mm,
+    inner sep=0pt, fill=white
+  },
+  elzonelabel/.style={
+    font=\sffamily\bfseries\scriptsize, text=black!55, inner sep=0pt
+  },
+  elzone/.style={
+    draw=black!18, line width=0.4pt, rounded corners=4pt,
+    inner sep=5mm
+  },
+  buswire/.style={
+    line width=1.0pt, line cap=round, line join=round,
+    rounded corners=2.5pt
+  },
+  pwire/.style={
+    line width=0.8pt, line cap=round, line join=round,
+    rounded corners=2pt, draw=black!70
+  },
+}
+
+% --- Header / Footer ---------------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\lhead{Cal Poly Pomona -- Autonomous Vehicle Laboratory -- IGVC 2026 AutoNav}
+\rfoot{\thepage}
+
+% --- Section formatting ------------------------------------------------------
+\titleformat{\section}{\Large\bfseries}{}{0em}{\thesection.~}
+\titleformat{\subsection}{\large\bfseries}{}{0em}{\thesubsection~}
+
+% --- Hyperref setup ----------------------------------------------------------
+\hypersetup{
+    colorlinks=true,
+    linkcolor=cppdarkgreen,
+    urlcolor=cppdarkgreen,
+    citecolor=cppdarkgreen
+}
+
+% --- Code listing style ------------------------------------------------------
+\lstset{
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{cppdarkgreen}\bfseries,
+    commentstyle=\color{gray},
+    stringstyle=\color{cppgold},
+    breaklines=true,
+    frame=single,
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    tabsize=4
+}
+
+% --- Macros ------------------------------------------------------------------
+\newcommand{\placeholder}[1]{\textcolor{red}{\textbf{[#1]}}}
+\newcommand{\robotname}{MARVIN}
+\newcommand{\teamname}{Cal Poly Pomona Autonomous Vehicle Lab}
+\newcommand{\university}{California State Polytechnic University, Pomona}
+
+% =============================================================================
+\begin{document}
+
+% --- Cover Page (IGVC 2026 §1, not counted toward page limit) ---------------
+\begin{titlepage}
+\centering
+
+\vspace*{1cm}
+
+{\Large\textbf{\university}}\\[0.3cm]
+{\LARGE\textbf{Autonomous Vehicle Laboratory}}\\[0.3cm]
+{\Large\textbf{IGVC 2026 Design Report}}\\[1.2cm]
+
+{\fontsize{36}{42}\selectfont\textbf{\textit{\robotname{}}}}\\[1.0cm]
+
+{\large\textbf{Challenge Targeted:} AutoNav}\\[0.6cm]
+
+\includegraphics[width=0.45\textwidth, trim=10 10 10 10, clip]{drafts/mechanical/figures/cad_isometric.png}
+
+\vspace{0.6cm}
+
+\begin{minipage}{0.85\textwidth}
+\centering
+I hereby certify that the development of the vehicle, \textit{\robotname{}}, as described in this report, is equivalent to the work involved in a senior design course.\\[1.5cm]
+
+\rule{8cm}{0.4pt}\\
+Faculty Advisor Signature \hspace{1cm} Submitted May 15, 2026
+\end{minipage}
+
+\vspace{1.0cm}
+
+\footnotesize
+\begin{tabular}{l l}
+\toprule
+\textbf{Role} & \textbf{Name / E-mail / Phone} \\
+\midrule
+Team Captain (primary) & Parsa Ghasemi --- \texttt{mghasemi@cpp.edu} --- 424-844-8222 \\
+Key Team Member (secondary) & \placeholder{Name -- email -- phone} \\
+Faculty Advisor (tertiary) & Dr.~Behnam Bahr --- \texttt{bbahr@cpp.edu} --- 949-690-5519 \\
+\bottomrule
+\end{tabular}
+\normalsize
+
+\vspace{0.4cm}
+
+\textit{\footnotesize Scan of Faculty Advisor's Signed Statement of Integrity attached as a separate PDF per IGVC 2026 rule IV.3.}
+
+\end{titlepage}
+
+% --- Optional Table of Contents (IGVC 2026 §2, not counted) -----------------
+\pagenumbering{roman}
+\thispagestyle{fancy}
+\tableofcontents
+\newpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+% =============================================================================
+% IGVC 2026 §3 -- SYSTEM AND SUBSYSTEM REQUIREMENTS
+% =============================================================================
+\section{System and Subsystem Requirements}
+\label{sec:requirements}
+
+\subsection{System Engineering Process}
+
+The \teamname{} (AVL) at \university{} presents \robotname{}, our entry for the IGVC
+2026 AutoNav challenge. AVL is an undergraduate research lab within the College of
+Engineering focused on autonomy, embedded systems, and ground-vehicle perception. The
+IGVC subteam of \placeholder{N} students is organized across software, mechanical, and
+electrical disciplines, advised by Dr.~Behnam Bahr, and led by Parsa Ghasemi as project
+captain. \robotname{} is a fully autonomous differential-drive tracked vehicle built on
+the AndyMark Raptor chassis, fusing a Velodyne VLP-16 3D LiDAR, three Stereolabs ZED~X
+stereo cameras, and an Xsens MTi-680G IMU+GNSS, with autonomy running on an NVIDIA
+Jetson Orin under ROS~2 Humble. The team followed an iterative \textit{research
+$\rightarrow$ design $\rightarrow$ prototype $\rightarrow$ test} cycle: rulebook
+analysis $\to$ system-level requirements; parallel subsystem development; incremental
+bench/actuator/fusion/Nav2 integration; and iterative field testing at the
+\placeholder{CPP test area} to tune HSV thresholds, EKF covariances, costmap
+parameters, and MPPI critic weights. Figure~\ref{fig:system_arch} shows the resulting
+system architecture.
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[
+        font=\scriptsize,
+        sensor/.style={draw, rounded corners, fill=blue!10, minimum width=2.0cm, minimum height=0.5cm, align=center},
+        block/.style={draw, rounded corners, fill=cppgreen!15, minimum width=2.0cm, minimum height=0.5cm, align=center},
+        hw/.style={draw, rounded corners, fill=orange!15, minimum width=2.0cm, minimum height=0.5cm, align=center},
+        layer/.style={font=\scriptsize\itshape\color{gray}, align=right},
+        arr/.style={-{Stealth[length=1.5mm]}, thick},
+        node distance=0.5cm and 0.6cm,
+    ]
+        \node[sensor] (vlp) {VLP-16\\3D LiDAR};
+        \node[sensor, right=of vlp] (zed) {3$\times$ ZED~X\\stereo cams};
+        \node[sensor, right=of zed] (imu) {Xsens IMU};
+        \node[sensor, right=of imu] (gps) {Xsens GNSS};
+        \node[layer, left=0.4cm of vlp] {Sensing};
+
+        \node[block, below=1.5cm of vlp] (stvl) {STVL Layer\\(LiDAR voxels)};
+        \node[block, right=of stvl] (perc) {3$\times$ Perception\\HSV pipeline};
+        \node[block, right=of perc] (ekfL) {EKF Local\\\texttt{odom $\to$ base\_link}};
+        \node[block, right=of ekfL] (ekfG) {EKF Global\\\texttt{map $\to$ odom}};
+        \node[layer, left=0.4cm of stvl] {Perception /\\Localization};
+
+        \node[block, below=1.4cm of stvl] (costmap) {Costmaps\\(local + global)};
+        \node[block, right=of costmap] (planner) {NavfnPlanner\\(Dijkstra)};
+        \node[block, right=of planner] (mppi) {MPPI Controller\\(diff-drive)};
+        \node[block, right=of mppi] (bt) {BT Navigator\\+ Mission Mgr};
+        \node[layer, left=0.4cm of costmap] {Driving Logic};
+
+        \node[block, below=1.0cm of planner.south east, anchor=north] (act) {Actuator Node\\\texttt{cmd\_vel} $\to$ wheel RPM};
+        \node[hw, below=0.5cm of act] (teensy) {Teensy 4.1 (USB serial $\to$ CAN)};
+        \node[hw, below=0.5cm of teensy] (spark) {2$\times$ SparkMAX $\to$ 2$\times$ NEO};
+        \node[layer, left=0.4cm of stvl |- teensy, anchor=east] {Actuation};
+
+        \draw[arr] (vlp.south) -- ++(0,-0.4) -| (stvl.north);
+        \draw[arr] (zed.south) -- ++(0,-0.4) -| (perc.north);
+        \draw[arr] (imu.south) -- ++(0,-0.4) -| (ekfL.north);
+        \draw[arr] (imu.south) ++(0,-0.4) -| (ekfG.north);
+        \draw[arr] (gps.south) -- ++(0,-0.4) -| (ekfG.north);
+
+        \draw[arr] (stvl.south) -- ++(0,-0.45) -| (costmap.north);
+        \draw[arr] (perc.south) -- ++(0,-0.45) -| (costmap.north);
+        \draw[arr] (ekfL.south) -- ++(0,-0.45) -| (costmap.north);
+        \draw[arr] (ekfG.south) -- ++(0,-0.45) -| (planner.north);
+
+        \draw[arr] (costmap) -- (planner);
+        \draw[arr] (planner) -- (mppi);
+        \draw[arr] (mppi) -- (bt);
+
+        \draw[arr] (mppi.south) -- node[right, pos=0.45]{\texttt{/cmd\_vel}} (act.north);
+        \draw[arr] (act) -- node[right]{USB serial} (teensy);
+        \draw[arr] (teensy) -- node[right]{CAN 1\,Mb/s} (spark);
+    \end{tikzpicture}
+    \caption{\robotname{} system architecture. Sensors feed perception and localization;
+    Nav2 composes costmaps, plans (NavfnPlanner), and follows the plan (MPPI Controller).
+    The actuator node converts \texttt{/cmd\_vel} to per-wheel RPM and forwards it to the
+    Teensy over USB serial; the Teensy bridges to two SparkMAX motor controllers over CAN.}
+    \label{fig:system_arch}
+\end{figure}
+
+\subsection{Requirements Summary}
+
+Per IGVC 2026 rule IV.3 \S3, the requirements below list at least 2 each for
+mechanical, safety, electrical/electronic, perception, driving logic, and key
+performance indicators. We are targeting the AutoNav challenge, so 12 requirements are
+listed. Each row cites the rule (or internal source) driving it, the measurement
+method, and the target value.
+
+\begin{table}[H]
+    \centering
+    \scriptsize
+    \caption{System and subsystem requirements (AutoNav target, 12 rows).}
+    \label{tab:requirements}
+    \begin{tabularx}{\textwidth}{l l X l}
+        \toprule
+        \textbf{Category} & \textbf{Requirement} & \textbf{Source / Measurement} & \textbf{Target} \\
+        \midrule
+        Mechanical    & Vehicle length within 3--7~ft & IGVC I.2 / tape measure & $36''$ (3~ft) \\
+        Mechanical    & E-stop button mounted 2--4~ft above ground, centered rear & IGVC I.2 / tape measure & $24''$ \\
+        Safety        & Wireless E-stop range (margin over 100~ft minimum) & IGVC I.2 \& I.4 / open-field radio range test & $\geq 150$~ft \\
+        Safety        & Hardware-governed maximum ground speed & IGVC I.2 / GPS + treadmill & $\leq 5$~mph \\
+        Electrical    & Battery runtime under nominal autonomous load & IGVC IV.3 \S6 / dyno burndown & $\geq 6$~min (1 margin run) \\
+        Electrical    & Per-rail fault isolation & Internal / short one rail, verify others & All other rails active \\
+        Perception    & Obstacle detection range (local costmap)  & IGVC II.2 / VLP-16 ranging on barrel & $\geq 2$~m \\
+        Perception    & Lane detection pixel recall under varied lighting & Internal / labeled image set & $\geq 95\%$ \\
+        Driving logic & Obstacle reaction time & Internal / log latency STVL update $\to$ \texttt{cmd\_vel} & $\leq 250$~ms \\
+        Driving logic & Waypoint arrival accuracy (2~m IGVC tolerance) & IGVC I.4 / GPS log distance to waypoint & $\leq 1$~m \\
+        KPI           & Course completion time (6~min IGVC ceiling) & IGVC II.2 / wall clock & $\leq 5$~min \\
+        KPI           & Ramp ascension success ($\leq 15\%$ gradient per IGVC II.2) & IGVC II.2 / pass-fail & Pass \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+Each ``Requirements Compliance'' subsection at the end of \S2--\S6 compares these target
+values against the most recently measured values.
+
+% =============================================================================
+% IGVC 2026 §4 -- MECHANICAL DESIGN
+% =============================================================================
+\section{Mechanical Design}
+\label{sec:mechanical}
+
+\subsection{Overview}
+
+As first-year IGVC participants, the mechanical subteam prioritized a simple, modular,
+and cost-effective platform that concentrates budget on the sensors and compute
+required for autonomous navigation. \robotname{} is built on the commercially available
+AndyMark\textsuperscript{\textregistered} Raptor Track Drive, a tracked differential
+base selected for its all-terrain traction and short delivery lead time. A reconfigurable
+80/20 T-slot aluminum superstructure is mounted directly to the chassis, allowing rapid
+iteration on sensor mounts and shelf geometry through the design cycle. The same chassis
+can host different electronics housings for future competitions; for IGVC~2026 the
+housing is mounted on the upper shelf so that the electronics, payload, and E-stop are
+all readily accessible during operation and inspection. The integrated vehicle is shown
+on the cover page; a rear-three-quarter view is in Figure~\ref{fig:cad_rear}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.45\linewidth, trim=10 10 10 10, clip]{drafts/mechanical/figures/cad_rear.png}
+    \caption{Rear three-quarter view of \robotname{}; the rear shelf supports the mechanical E-stop and extends the chassis to meet the IGVC 3~ft length minimum.}
+    \label{fig:cad_rear}
+\end{figure}
+
+\subsection{Drivetrain}
+
+\robotname{} uses a tracked \textbf{differential-drive} architecture: two REV NEO
+brushless motors, each commanded by a REV SparkMAX controller over CAN, independently
+drive the left and right track loops. The choice eliminates steering linkages, reduces
+the part count, and produces a control plant that maps cleanly onto the ROS~2 Nav2 / MPPI
+controller running on the Jetson. With $v_L$ and $v_R$ the left and right track linear
+velocities, the body-frame linear and angular rates are
+\begin{align}
+    v &= \tfrac{1}{2}(v_R + v_L), &
+    \omega &= \tfrac{1}{b}(v_R - v_L),
+\end{align}
+where $b$ is the track width (effective lever arm between contact patches). The planner
+uses three operating modes: pivot turn (one track held, robot rotates about the
+stationary contact patch); in-place spin ($v_R = -v_L$, ICR at the vehicle center,
+maximum yaw rate); and gradual curve (both tracks forward, $v_R \neq v_L$).
+
+The full electromechanical signal path (also shown in Figure~\ref{fig:system_arch} and
+Figure~\ref{fig:electrical-block}) is: Jetson Orin issues
+\texttt{geometry\_msgs/Twist} at 50~Hz over USB serial to the Teensy~4.1; the Teensy
+decomposes commands into per-side wheel velocities and forwards them over CAN at
+1~Mbit/s to the two SparkMAX controllers; each SparkMAX closes a 1~kHz velocity loop
+around its NEO motor using the integrated Hall encoders.
+
+\subsection{Frame, Housing, and Sensor Mast}
+
+The Raptor base contributes the drive sprockets, idlers, and rubber-track belts that
+distribute vehicle weight over a large contact patch, improving traction and stability
+on the uneven turf and gravel sections of the IGVC course. A $21.5'' \times 30''$,
+$1/8''$ thick A36 diamond-plate steel base is bolted directly to the Raptor mounting
+rails. The diamond plate serves three functions: (i) a rigid surface for heavy
+components, (ii) an EMI-attenuating ground plane between battery and tracked drive, and
+(iii) a low-mounted mass that lowers the center of gravity. The superstructure is built
+from 80/20\textsuperscript{\textregistered} 20-Series T-slot aluminum extrusion --- modular,
+reconfigurable, and free of exposed threaded ends.
+
+Weight placement was an explicit design priority. The 48~V battery is mounted at the
+geometric center of the diamond plate; the 20~lb payload bay sits at the front of the
+deck on a 3D-printed cradle. The resulting center of gravity sits slightly forward of
+the track midpoint and low on the deck, minimizing pitch moment on inclines and during
+skid-steer turns. The diamond-plate deck is $21.5'' \times 30''$ and the upper sensor
+shelf is $23'' \times 23'' \times 6''$ mounted 20~in above ground; the rear shelf
+carries the E-stop button at $24''$ (Figure~\ref{fig:cad_rear}). The chassis was
+extended with that rear shelf to satisfy both the IGVC 3~ft minimum length and the
+2--4~ft E-stop mounting requirement.
+
+\begin{table}[H]
+    \centering
+    \footnotesize
+    \caption{\robotname{} vehicle specifications.}
+    \label{tab:specs}
+    \begin{tabular}{l l}
+        \toprule
+        \textbf{Parameter} & \textbf{Value} \\
+        \midrule
+        Drive configuration & Tracked differential (skid-steer) \\
+        Base platform & AndyMark Raptor Track Drive \\
+        Overall length $\times$ width & $\sim 36'' \times 24''$ (meets 3~ft min.) \\
+        Overall vehicle height (excl.\ E-stop antenna) & $\sim 29''$ ($\sim 2.4$~ft; well under 6~ft IGVC max) \\
+        Sensor-shelf height & $20''$ (top surface) \\
+        E-stop mounting height & $24''$ (rear shelf, centered) \\
+        Payload capacity (verified) & $\geq 20$~lb \\
+        Drive motors & 2$\times$ REV NEO brushless (12--48~V) \\
+        Motor controllers & 2$\times$ REV SparkMAX (CAN, 1~Mbit/s) \\
+        Battery pack & Aegis 48~V 25~Ah LiFePO\textsubscript{4}, center-mounted \\
+        Frame material & 80/20 20-Series T-slot aluminum extrusion \\
+        Deck material & 1/8'' A36 diamond-plate steel \\
+        Weather panels & Polycarbonate / acrylic in T-slot grooves \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{Weatherproofing}
+
+Outdoor operation requires the electronics bay to tolerate rain and direct sun. The
+sensor-shelf walls are cut-to-fit acrylic panels that slide directly into the 20-Series
+T-slot grooves; weatherstripping gasket fills the residual gap and remains seated under
+track vibration. The top panel is mildly angled for water runoff and incorporates a
+sliding access door. The LiDAR is mounted externally above the shelf to keep its
+$360^\circ$ field of view unobstructed; the ZED~X cameras sit behind AR-coated windows.
+
+\subsection{Mechanical Requirements Compliance}
+
+\begin{table}[H]
+    \centering
+    \small
+    \caption{Mechanical requirements: target vs.\ measured.}
+    \begin{tabularx}{\textwidth}{X l l}
+        \toprule
+        \textbf{Requirement} & \textbf{Target} & \textbf{Measured} \\
+        \midrule
+        Vehicle length (3--7~ft IGVC range)                  & $36''$       & $\sim 36''$ (verified) \\
+        Vehicle width (2--4~ft IGVC range)                   & $24''$       & $\sim 24''$ (verified) \\
+        Vehicle height ($\leq 6$~ft IGVC excl.\ antenna)     & $\sim 29''$  & $\sim 29''$ (verified) \\
+        E-stop button mounting height (2--4~ft IGVC band)    & $24''$       & $24''$ (verified) \\
+        Payload capacity (20~lb cinder block per IGVC I.3)   & $\geq 20$~lb & $\geq 20$~lb (verified) \\
+        Track width $b$ for diff-drive kinematics            & 0.7366~m     & 0.7366~m (verified) \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+% =============================================================================
+% IGVC 2026 §5 -- SAFETY
+% =============================================================================
+\section{Safety}
+\label{sec:safety}
+
+\subsection{Transport, Parked, and Charging Safety}
+
+\placeholder{Describe transport tie-downs, parked-state interlocks, and battery
+charging procedures. Required items per IGVC 2026 rule IV.3 \S5: how the robot is
+secured during transport; how the motor controllers are de-energized when parked; and
+the safety procedure used during battery charging (cutoff thresholds, charger isolation
+from drive bus, location, and supervision).}
+
+\subsection{On-Course Safety}
+
+The on-course safety architecture (Figure~\ref{fig:safety_block}) implements a
+hardware-enforced two-channel emergency stop: either the rear-mounted mechanical E-stop
+button or the wireless remote E-stop receiver opens a relay in series with the
+motor-controller enable line. When the relay opens, the SparkMAX controllers immediately
+disable PWM output and brake the NEO motors via the integrated short-brake mode;
+software is not in the loop, so a Jetson hang or ROS crash cannot defeat the stop.
+Indicator LEDs visible from outside the chassis show the armed/disarmed state for the
+IGVC safety inspection.
+
+\begin{figure}[H]
+    \centering
+    \input{drafts/mechanical/figures/safety_block.tex}
+    \caption{Two-channel emergency stop. The mechanical (rear-shelf) and wireless E-stops
+    are wired in series with the motor-enable relay; either one open de-energizes both
+    SparkMAX controllers, independent of software state.}
+    \label{fig:safety_block}
+\end{figure}
+
+In software, the actuator node additionally zeroes \texttt{cmd\_vel} on stale input
+(300~ms watchdog) so a Jetson stall or ROS-node crash defaults the vehicle to a stop
+even before the hardware relay reacts. A firmware speed clamp at $\pm$4600~RPM
+(1.53~m/s ground speed) further limits the worst-case motion even if upstream commands
+are malformed.
+
+\subsection{Safety Requirements Compliance}
+
+\begin{table}[H]
+    \centering
+    \small
+    \caption{Safety requirements: target vs.\ measured.}
+    \begin{tabularx}{\textwidth}{X l l}
+        \toprule
+        \textbf{Requirement} & \textbf{Target} & \textbf{Measured} \\
+        \midrule
+        Wireless E-stop range (IGVC 100~ft minimum)     & $\geq 150$~ft & $>$100~ft (verified) \\
+        Hardware max ground speed cap                   & $\leq 5$~mph  & 3.4~mph (1.53~m/s) \\
+        E-stop button mounting height                   & 2--4~ft       & $24''$ (verified) \\
+        Software serial watchdog timeout                & $\leq 500$~ms & 300~ms \\
+        SparkMAX CAN heartbeat timeout (per controller) & $\leq 200$~ms & 100~ms \\
+        Firmware RPM clamp ($\to$ ground-speed cap)     & $\leq 4600$~RPM ($\leq 5$~mph) & $\pm 4600$~RPM (1.53~m/s) \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+% =============================================================================
+% IGVC 2026 §6 -- ELECTRICAL / ELECTRONIC DESIGN
+% =============================================================================
+\section{Electrical and Electronic Design}
+\label{sec:electrical}
+
+\subsection{Overview}
+
+The 2026 electrical architecture is organised into four subsystems: power
+distribution, network and computation, sensing, and motor control.
+Figure~\ref{fig:electrical-block} shows how these subsystems interconnect.
+
+\begin{itemize}
+  \item \textbf{Power} --- a 48~V battery feeds two buck converters (12~V and 5~V
+    rails) that supply the rest of the vehicle (\S\ref{sec:electrical}.2).
+  \item \textbf{Compute} --- a Jetson Orin GPU handles perception and high-level
+    control. It commands a Teensy~4.1 microcontroller over USB serial
+    (\S\ref{sec:electrical}.5).
+  \item \textbf{Sensing} --- three ZED~X stereo cameras, a Velodyne LiDAR, and an
+    Xsens GPS feed the Jetson (\S\ref{sec:electrical}.4).
+  \item \textbf{Motor control} --- the Teensy runs a closed-loop controller and
+    commands two SPARK~MAX motor controllers over CAN, which in turn drive
+    two NEO brushless motors (\S\ref{sec:electrical}.3).
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.85cm, y=0.85cm]
+
+\node[elblock] (buck5)    at (-3.0, 0)    {Buck Converter\\5\,V / 6\,A};
+\node[elblock] (battery)  at ( 0.0, 0)    {48\,V Battery};
+\node[elblock] (buck12)   at ( 3.0, 0)    {Buck Converter\\12\,V / 20\,A};
+
+\node[elblock]   (teensy)   at (-3.0, -3.0) {Teensy 4.1};
+\node[elblocksm] (velodyne) at ( 0.0, -3.0) {Velodyne\\LiDAR};
+\node[elblocksm] (router)   at ( 3.0, -3.0) {Router};
+\node[elblocksm] (jetson)   at ( 6.0, -3.0) {Jetson Orin\\(GPU)};
+
+\node[elblock]   (sparkL)   at (-4.0, -6.0) {SPARK MAX\\Controller};
+\node[elblock]   (sparkR)   at (-1.0, -6.0) {SPARK MAX\\Controller};
+\node[elblocksm] (zedlink)  at ( 6.0, -6.0) {ZED Link\\Quad};
+
+\node[elmotor]   (motorL) at (-4.0, -8.0) {Motor};
+\node[elmotor]   (motorR) at (-1.0, -8.0) {Motor};
+\node[elblocksm] (cam1) at ( 3.5, -8.2) {ZED X};
+\node[elblocksm] (cam2) at ( 6.0, -8.2) {ZED X};
+\node[elblocksm] (cam3) at ( 8.5, -8.2) {ZED X};
+
+\begin{scope}[on background layer]
+  \node[elzone, fill=zoneA, fit=(buck5)(battery)(buck12)] (z_power) {};
+  \node[elzone, fill=zoneB, fit=(teensy)(velodyne)(router)(jetson)] (z_compute) {};
+  \node[elzone, fill=zoneC, fit=(sparkL)(sparkR)(motorL)(motorR)] (z_motor) {};
+  \node[elzone, fill=zoneD, fit=(zedlink)(cam1)(cam2)(cam3)] (z_sensing) {};
+\end{scope}
+
+\node[elzonelabel, anchor=north west] at ($(z_power.north west)   + (1.5mm,-1.2mm)$) {POWER};
+\node[elzonelabel, anchor=north west] at ($(z_compute.north west) + (1.5mm,-1.2mm)$) {COMPUTE \& NETWORK};
+\node[elzonelabel, anchor=north west] at ($(z_motor.north west)   + (1.5mm,-1.2mm)$) {MOTOR DRIVE};
+\node[elzonelabel, anchor=north west] at ($(z_sensing.north west) + (1.5mm,-1.2mm)$) {SENSING};
+
+\draw[buswire, color=bus48v] (buck5.east)   -- (battery.west);
+\draw[buswire, color=bus48v] (battery.east) -- (buck12.west);
+\draw[buswire, color=bus5v] (buck5.south) -- (teensy.north);
+
+\coordinate (t5_drop) at (-1.6, -3.0);
+\coordinate (t5_chan) at (-1.6, -4.2);
+\coordinate (t5_up)   at ( 4.6, -4.2);
+\draw[buswire, color=bus5v]
+  (teensy.east) -- (t5_drop) -- (t5_chan) -- (t5_up) |- (zedlink.west);
+
+\coordinate (p12_in)   at ($(buck12.south) + (0,-0.4)$);
+\coordinate (p12_chL)  at (sparkL |- 0,-4.8);
+\coordinate (p12_chR)  at (sparkR |- 0,-4.8);
+\draw[buswire, color=bus12v]
+  (buck12.south) -- (p12_in) -| (p12_chL) -- (sparkL.north);
+\draw[buswire, color=bus12v]
+  (p12_chL) -- (p12_chR) -- (sparkR.north);
+
+\draw[buswire, color=buseth] (velodyne.east) -- (router.west);
+\draw[buswire, color=buseth] (router.east)   -- (jetson.west);
+
+\coordinate (usb_chT) at (teensy |- 0,-1.7);
+\coordinate (usb_chJ) at (jetson |- 0,-1.7);
+\draw[buswire, color=bususb] (jetson.north) -- (usb_chJ) -- (usb_chT) -- (teensy.north);
+
+\coordinate (can_drop) at ($(teensy.south) + (0,-0.5)$);
+\coordinate (can_chL)  at (sparkL |- 0,-5.4);
+\coordinate (can_chR)  at (sparkR |- 0,-5.4);
+\draw[buswire, color=buscan]
+  (teensy.south) -- (can_drop) -| (can_chL) -- (sparkL.north);
+\draw[buswire, color=buscan]
+  (can_chL) -- (can_chR) -- (sparkR.north);
+\fill[buscan] (can_chL) circle (1.1pt);
+\fill[buscan] (can_chR) circle (1.1pt);
+\fill[bus12v] (p12_chL) circle (1.1pt);
+\fill[bus12v] (p12_chR) circle (1.1pt);
+
+\draw[buswire, color=buspcie] (jetson.south) -- (zedlink.north);
+
+\coordinate (gm_trunk) at ($(zedlink.south) + (0,-0.6)$);
+\draw[buswire, color=busgmsl] (zedlink.south) -- (gm_trunk) -| (cam1.north);
+\draw[buswire, color=busgmsl] (gm_trunk) -- (cam2.north);
+\draw[buswire, color=busgmsl] (gm_trunk) -| (cam3.north);
+
+\draw[pwire] (sparkL.south) -- (motorL.north);
+\draw[pwire] (sparkR.south) -- (motorR.north);
+\end{tikzpicture}
+
+\vspace{2mm}
+\begin{tikzpicture}[baseline]
+  \foreach \i/\col/\lbl in {%
+      0/bus48v/48\,V,  1/bus12v/12\,V,  2/bus5v/5\,V,
+      3/buseth/Ethernet, 4/buscan/CAN,
+      5/buspcie/PCIe, 6/busgmsl/GMSL2, 7/bususb/USB\,serial}
+  {
+    \draw[line width=1.2pt, color=\col, line cap=round]
+      (\i*1.8, 0) -- ++(0.55,0);
+    \node[anchor=west, font=\sffamily\scriptsize, text=black!75]
+      at (\i*1.8 + 0.6, 0) {\lbl};
+  }
+\end{tikzpicture}
+
+\caption{System-level electrical block diagram.}
+\label{fig:electrical-block}
+\end{figure}
+
+\subsection{Power Distribution}
+
+The vehicle is powered by an Aegis 48~V 25~Ah LiFePO\textsubscript{4} deep-cycle
+lithium battery (1.2~kWh nominal). LiFePO\textsubscript{4} chemistry was selected for
+its thermal stability, $\sim$2000-cycle service life, and tolerance to partial-state-of-charge
+operation between practice runs. The battery passes through a main switch into two
+buck converters (also shown in Figure~\ref{fig:electrical-block}): a 12~V / 20~A
+converter for the motor controllers and other high-power loads, and a 5~V / 6~A
+converter for the Teensy~4.1 and low-power peripherals. Each rail is split into three
+independently fused output branches (battery $\to$ switch $\to$ buck $\to$ 3 fused
+branches per rail) so a short on one load does not pull down the rest of the vehicle.
+
+\textbf{Run time and recharge.} A 25~Ah pack at 48~V stores $\sim$1200~Wh. Estimated
+nominal load under autonomous operation is $\sim$155~W (Jetson Orin $\sim$30~W,
+VLP-16 LiDAR 8~W, 3$\times$ ZED~X $\sim$9~W, Xsens IMU/GPS 1~W, router 5~W, Teensy
+$<$1~W, drive motors $\sim$100~W average over typical IGVC speeds), which corresponds
+to $\sim$3.2~A at the 48~V bus. Allowing for buck-converter and battery losses
+($\eta_{\text{tot}} \approx 0.85$), the calculated runtime is
+$\sim$1200~Wh~$\times$~0.85~/~155~W~$\approx$~6.5~hours --- two orders of magnitude
+above the 6-minute IGVC II.2 course ceiling and enough for a full practice day on a
+single charge under realistic load.
+
+The pack is recharged with a DC House 48~V 18~A LiFePO\textsubscript{4}
+portable charger (model S-US-L131211800092-1, 58.4~V CV output, 18~A bulk-charge
+current, IP65). At 18~A bulk current, a fully depleted 25~Ah pack reaches $\sim$80\%
+state of charge in $\sim$1.4~hours; with the LiFePO\textsubscript{4} absorption phase
+and cell balancing, a full recharge takes approximately 1.5--2~hours. Charging is
+performed outside the vehicle with the battery disconnected from the drive bus.
+
+\subsection{Motor Control}
+
+The drivetrain uses two NEO brushless motors, each driven by a SPARK~MAX motor
+controller. Both controllers share a single CAN bus to the Teensy~4.1, which acts as the
+real-time control node. Each SPARK~MAX reports position and velocity from its integrated
+encoder back over the same bus. The Teensy closes a PID velocity loop per wheel, using
+encoder feedback from the SPARK~MAX controllers and reference velocities published by
+the Jetson over USB serial. Because the motor controllers, the encoders, and the
+microcontroller all live on one CAN bus, no separate signal wiring between the motor
+controllers and the Teensy is required.
+
+\textbf{Firmware.} The Teensy 4.1 translates ASCII RPM commands into SparkMAX CAN
+velocity setpoints at 1~Mbit/s and echoes encoder feedback at 50~Hz. Three independent
+timeouts protect the drivetrain: a 300~ms serial watchdog on the Teensy, a 100~ms CAN
+heartbeat timeout per SparkMAX, and a firmware clamp of $\pm$4600~RPM (1.53~m/s ground
+speed, below the 5~mph IGVC cap).
+
+\subsection{Sensors}
+
+\textbf{Stereo cameras.} Three ZED~X cameras (front-left, front, front-right) connect
+to a ZED~Link Quad over GMSL2; the ZED~Link Quad attaches to the Jetson over PCIe,
+keeping the cameras off the Ethernet network.
+
+\textbf{LiDAR.} A Velodyne VLP-16 provides 360$^\circ$ 3D point clouds at 10~Hz. It
+reports to the Jetson over Ethernet through the on-board router.
+
+\textbf{GPS / IMU.} An Xsens MTi-680G provides 9-axis inertial data at 100~Hz and a
+standalone GNSS fix at 5~Hz (RTK disabled per IGVC rules). It connects directly to the
+Jetson over USB.
+
+\subsection{Network and Computation}
+
+The Jetson Orin is the primary computation unit; it runs perception, sensor fusion, and
+trajectory generation, and publishes wheel velocity commands to the Teensy. An on-board
+router carries Ethernet between the Jetson and the Velodyne LiDAR. The Teensy~4.1
+connects to the Jetson via USB serial (115200 baud) rather than Ethernet. The
+high-bandwidth camera link is kept separate: the ZED~Link Quad attaches directly to the
+Jetson over PCIe so that the three ZED~X feeds do not contend for the Ethernet network.
+The Xsens GPS connects directly to the Jetson. The same router also exposes a Wi-Fi
+link to a remote laptop for monitoring, data capture, and remote shutdown during
+testing.
+
+\subsection{Bill of Materials}
+
+\begin{table}[H]
+    \centering
+    \footnotesize
+    \caption{Bill of significant components (estimated team cost).}
+    \begin{tabularx}{\textwidth}{c X l r}
+        \toprule
+        \textbf{Qty} & \textbf{Component} & \textbf{Subsystem} & \textbf{Cost} \\
+        \midrule
+        1 & NVIDIA Jetson AGX Orin 64\,GB Developer Kit (JetPack 6, ROS~2 Humble) & Compute & \$1{,}999.00 \\
+        2 & REV NEO Brushless Motor v1.1 (REV-21-1650) @ \$50.00 ea & Drivetrain & \$100.00 \\
+        2 & REV SPARK MAX Motor Controller (REV-11-2158) @ \$100.00 ea & Drivetrain & \$200.00 \\
+        1 & PJRC Teensy 4.1 (SparkFun) & Firmware bridge & \$31.50 \\
+        1 & Waveshare SN65HVD230 CAN transceiver breakout & Firmware bridge & \$8.00 \\
+        1 & Velodyne VLP-16 Puck 3D LiDAR (discontinued by Ouster 2025; last announced retail) & Perception & \$4{,}000.00 \\
+        3 & Stereolabs ZED~X stereo camera (GMSL2) @ \$599.00 ea & Perception & \$1{,}797.00 \\
+        1 & ZED Link Quad GMSL2 capture card & Perception & \$489.00 \\
+        1 & Xsens MTi-680G RTK GNSS/INS (DigiKey) & Localization & \$3{,}612.50 \\
+        1 & AndyMark Raptor Track Drive (full chassis) & Mechanical & \$423.00 \\
+        1 & Aegis 48\,V 25\,Ah LiFePO\textsubscript{4} deep-cycle battery & Power & \$464.78 \\
+        1 & DC House 48\,V 18\,A LiFePO\textsubscript{4} charger (58.4\,V CV, IP65) & Power & \$129.99 \\
+        1 & Safety light, wireless E-stop, push-button, wiring, misc.\ & Safety / Misc.\ & \$500.00 \\
+        \midrule
+        \multicolumn{3}{r}{\textbf{Total estimated market cost}} & \$13{,}754.77 \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\subsection{Electrical Requirements Compliance}
+
+\begin{table}[H]
+    \centering
+    \small
+    \caption{Electrical/electronic requirements: target vs.\ measured.}
+    \begin{tabularx}{\textwidth}{X l l}
+        \toprule
+        \textbf{Requirement} & \textbf{Target} & \textbf{Measured} \\
+        \midrule
+        Battery runtime (1 course run @ 6~min + margin) & $\geq 6$~min               & $\sim$6.5~h calc.; \placeholder{measured~min} \\
+        Battery pack voltage                            & 48~V nominal                & 48~V (verified) \\
+        12~V rail capacity (motor controllers)          & $\geq 20$~A                 & 20~A buck (verified) \\
+        5~V rail capacity (Teensy + low-power)          & $\geq 6$~A                  & 6~A buck (verified) \\
+        Per-rail fault isolation                        & All other rails active      & \placeholder{verified pass/fail} \\
+        Full recharge time (18~A bulk, 25~Ah pack)      & $\leq 2$~h                  & $\sim$1.5--2~h calc.; \placeholder{measured} \\
+        CAN bus rate                                    & $\geq 500$~kbit/s           & 1~Mbit/s (verified) \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+% =============================================================================
+% IGVC 2026 §7 -- PERCEPTION
+% =============================================================================
+\section{Perception}
+\label{sec:perception}
+
+The perception stack splits responsibilities between LiDAR (physical obstacles) and
+cameras (painted lane lines and color-coded objects), with both feeding a unified
+costmap consumed by the driving-logic layer. We are targeting the AutoNav challenge, so
+this section discusses lane and obstacle perception specific to the AutoNav course.
+
+\subsection{LiDAR Perception (Velodyne VLP-16)}
+
+The VLP-16 publishes a 360$^\circ$ point cloud at 10~Hz into Nav2's
+\texttt{spatio\_temporal\_voxel\_layer} (STVL), which maintains a 0.1~m voxel grid with
+5~s linear voxel decay. A minimum obstacle height of 0.2~m filters ground hits and low
+grass while keeping short barrels and pedestrians. Detection range is 1--15~m local and
+1--50~m global. STVL replaces the standard \texttt{VoxelLayer} because the VLP-16's
+16-beam $\pm$15$^\circ$ vertical FOV leaves angular gaps that defeat ray-trace clearing
+when the robot is stationary; STVL clears via time-based voxel decay plus a
+frustum-accelerated decay term that handles the sparse-scan case cleanly.
+
+\subsection{Vision Perception (3$\times$ ZED~X)}
+
+Each ZED~X publishes rectified HD1080 color and a COMPACT-resolution organized point
+cloud at 10~Hz. The \texttt{avros\_perception} package runs one \texttt{perception\_node}
+per camera; each subscribes to its camera's RGB and cloud topics through an
+\texttt{ApproximateTimeSynchronizer} (20~ms slop) and runs a pluggable pipeline. The
+production pipeline (\texttt{hsv}) performs three-class HSV thresholding (white lane,
+orange barrel, pothole) with an adaptive value-channel floor
+($V_{\text{floor}} = \mu_V + k\sigma_V$, recomputed every $N$ frames) and a polygonal
+sky-rejection ROI. Class IDs: 1 = lane, 2 = barrel, 3 = pothole. All thresholds are
+runtime-tunable via \texttt{ros2 param set} for field calibration.
+
+Every pipeline outputs the four-topic contract consumed by the
+\texttt{kiwicampus/semantic\_segmentation\_layer}: a mono8 class-ID mask, a mono8
+confidence plane, the organized point cloud (relayed), and a latched
+\texttt{vision\_msgs/LabelInfo}.
+
+\subsection{Internal Course Representation (Costmap)}
+
+Perception outputs are fused into two Nav2 costmaps: a 50$\times$50~m rolling local
+costmap at 0.2~m resolution (\texttt{stvl\_layer} + 3$\times$ \texttt{semantic\_layer}
+front/left/right + \texttt{inflation\_layer}) and a 100$\times$100~m rolling global
+costmap (\texttt{obstacle\_layer} + \texttt{inflation\_layer}). The robot footprint is
+rectangular $1.00 \times 0.74$~m with $r_{\text{inscr}} = 0.5$~m and an inflation radius
+of 0.65~m. STVL voxel decay (5~s) keeps stale cells from blocking the planner after the
+robot moves; semantic raytrace clearing handles cells that have been re-observed as
+free.
+
+\subsection{AutoNav Course-Specific Behavior}
+
+The AutoNav course (IGVC II.2) features painted white lane lines $\sim 3''$ wide on
+asphalt, randomly placed construction barrels (white/orange/brown/green/black) at
+$\geq 5$~ft clearance from the lane, an $\leq 15\%$ gradient ramp, simulated potholes
+(2~ft white circles), and GPS waypoint pairs at course entry/exit and ramp entry. The
+HSV pipeline tagged with class~1 isolates white lane paint; barrels register under
+class~2; potholes register under class~3; the VLP-16 STVL marks any other physical
+obstacle. A startup auto-calibration routine samples the ground at run start and adapts
+the $V$-channel threshold to current lighting before mobility is enabled.
+
+\subsection{Perception Requirements Compliance}
+
+\begin{table}[H]
+    \centering
+    \small
+    \caption{Perception requirements: target vs.\ measured.}
+    \begin{tabularx}{\textwidth}{X l l}
+        \toprule
+        \textbf{Requirement} & \textbf{Target} & \textbf{Measured} \\
+        \midrule
+        Obstacle detection range (local costmap)   & $\geq 2$~m  & 15~m (VLP-16 STVL range) \\
+        Obstacle detection range (global costmap)  & $\geq 2$~m  & 50~m \\
+        Lane detection pixel recall                & $\geq 95\%$ & \placeholder{measured} \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+% =============================================================================
+% IGVC 2026 §8 -- DRIVING LOGIC
+% =============================================================================
+\section{Driving Logic}
+\label{sec:drivinglogic}
+
+The driving-logic stack converts the perception costmap and current pose into wheel
+commands. Nav2 provides path planning, trajectory generation, and behavior orchestration
+(\S\ref{sec:drivinglogic}.1); \texttt{robot\_localization} maintains the pose
+(\S\ref{sec:drivinglogic}.2); and the actuator node converts \texttt{cmd\_vel} to wheel
+RPM (\S\ref{sec:drivinglogic}.3). AutoNav-specific course handling --- lane following,
+obstacle avoidance, ramp, and waypoint navigation --- is described in
+\S\ref{sec:drivinglogic}.4.
+
+\subsection{Planning and Path Generation}
+
+\begin{table}[H]
+    \centering
+    \footnotesize
+    \caption{Nav2 configuration (\texttt{nav2\_params\_humble.yaml}).}
+    \label{tab:nav2}
+    \begin{tabularx}{\textwidth}{l X}
+        \toprule
+        \textbf{Component} & \textbf{Configuration} \\
+        \midrule
+        Planner & \texttt{NavfnPlanner} (Dijkstra) --- chosen over SmacPlannerHybrid because the IGVC lane spacing (2--3~m) is narrower than Hybrid's 2.31~m minimum turning radius \\
+        Controller & \texttt{MPPIController} --- DiffDrive motion model, 2000 rollouts, 56 timesteps, model $\Delta t$ 50~ms, 8 active critics \\
+        Local costmap & 50$\times$50~m rolling, 0.2~m resolution \\
+        Global costmap & 100$\times$100~m rolling, 0.2~m resolution \\
+        Footprint & Rectangular $1.00 \times 0.74$~m, $r_{\text{inscr}} = 0.5$~m \\
+        Inflation & $r_{\text{infl}} = 0.65$~m, $k_{\text{scale}} = 3.0$ \\
+        Goal tolerance & $xy$ 2.0~m (IGVC waypoint acceptance), yaw 0.5~rad \\
+        Controller frequency & 20~Hz; planner replans at 1~Hz via BT \texttt{RateController} \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+MPPI samples 2{,}000 rollout trajectories per 20~Hz control cycle, scores them against
+eight plugin-based critics (constraint, cost, goal, goal-angle, path-align, path-follow,
+path-angle, prefer-forward), and emits the noise-weighted optimal command. Unlike
+pursuit controllers that only \textit{follow} a path, MPPI \textit{generates} trajectories
+that deviate from the global plan to avoid newly observed obstacles --- critical for
+IGVC's randomly-placed barrels.
+
+\textbf{Behavior tree.} The active BT (\texttt{navigate\_igvc\_autonav\_humble.xml})
+wraps the standard plan-follow pipeline with several IGVC-specific guards. An outer
+\texttt{Timeout} of 45~s margins the 60~s hold-up-traffic disqualification rule. A
+\texttt{RecoveryNode} retries the pipeline up to three times; recovery actions form a
+\texttt{RoundRobin} escalating clear-costmap $\to$ wait $\to$ short backup $\to$ crawl
+forward. Spin-in-place is intentionally omitted: the $1.00 \times 0.74$~m footprint
+sweeps a 2.48~m diameter circle when off-center, exceeding the half-lane width.
+
+\textbf{Waypoint orchestration.} The \texttt{mission\_manager} node loads competition
+waypoints from \texttt{waypoints.yaml} as a lat/lon list, converts each to map frame via
+\texttt{/fromLL}, and fires \texttt{NavigateToPose} action goals sequentially. The
+cursor advances on a 2~m acceptance radius (IGVC rule); \texttt{ABORTED}/\texttt{CANCELED}
+failures fall through to the next waypoint.
+
+\subsection{Localization}
+
+Localization uses two instances of \texttt{robot\_localization}'s EKF; both run at
+30~Hz in 2D mode. The local EKF (\texttt{odom} $\to$ \texttt{base\_link}) fuses Xsens
+IMU (100~Hz), wheel odometry from the actuator node (50~Hz), and ZED~X VIO yaw
+(yaw-only, fused differentially to avoid the lever-arm bias from the camera's offset
+mount). The global EKF (\texttt{map} $\to$ \texttt{odom}) fuses the IMU stream with GPS
+odometry from \texttt{navsat\_transform\_node} in differential mode with a 6$\sigma$
+Mahalanobis outlier-rejection threshold. Integrating per-step GPS deltas rather than
+absolute fixes prevents costmap jumps from $\pm 2$--5~m consumer-grade GNSS noise (RTK
+is disabled per IGVC rules).
+
+\subsection{Drive Control}
+\label{sec:control}
+
+The \texttt{actuator\_node} bridges Nav2 to the physical drivetrain. It subscribes to
+\texttt{/cmd\_vel} (from Nav2, teleop, or the velocity smoother) and runs a 50~Hz loop:
+(1) source arbitration; (2) slew-rate limit (linear 0.5~m/s$^2$ accel, 1.5~m/s$^2$
+brake; angular 1.0~rad/s$^2$); (3) IMU-based heading hold ($K_p=1.5$) when
+$|\omega_{\text{cmd}}|<0.05$~rad/s, or gyro-stabilized turn ($K_p=0.3$) otherwise;
+(4) diff-drive inverse kinematics with \texttt{track\_width\_m=0.7366}, \texttt{m\_per\_motor\_rev=0.01994};
+(5) ASCII serial write to the Teensy at 115200~baud. In parallel, encoder feedback is
+integrated into a 50~Hz \texttt{/wheel\_odom} message that the local EKF consumes.
+
+\subsection{AutoNav Driving Logic}
+
+\begin{itemize}
+    \item \textbf{Lane following:} HSV white-lane masks feed the local costmap's
+    \texttt{semantic\_layer} as lethal cells; MPPI generates rollouts that stay inside
+    the lane corridor.
+    \item \textbf{Obstacle avoidance:} VLP-16 STVL marks barrels in both costmaps; MPPI's
+    \texttt{PreferForwardCritic} and \texttt{PathFollowCritic} bias toward forward motion
+    along the global plan when no obstacles intrude.
+    \item \textbf{Ramp handling:} The 2D-mode EKF assumption holds for the IGVC ramp;
+    pitch is monitored from the IMU. MPPI's cost-regulated velocity scaling
+    automatically slows the robot near costmap inflation.
+    \item \textbf{Switchbacks and dead-ends:} The BT recovery escalation
+    (clear-costmap $\to$ wait 2~s $\to$ backup 1.5~m at 0.08~m/s $\to$ crawl forward
+    0.15~m at 0.10~m/s) reorients the planner when the global plan is repeatedly
+    blocked, allowing the robot to back out of dead-ends and switchbacks.
+    \item \textbf{Potholes:} The HSV pipeline's class~3 channel marks the IGVC 2~ft
+    white-circle simulated potholes as lethal in the local costmap; MPPI rollouts that
+    would enter a pothole are scored as collisions and rejected.
+    \item \textbf{Traps and complex obstacles:} The 50$\times$50~m local costmap holds
+    obstacles long enough for MPPI to consider alternate paths; the inflation gradient
+    ($k_{\text{scale}}=3.0$) gives MPPI a smooth cost field so rollouts naturally
+    funnel through the widest gap between barrels.
+\end{itemize}
+
+\subsection{Driving Logic Requirements Compliance}
+
+\begin{table}[H]
+    \centering
+    \small
+    \caption{Driving logic requirements: target vs.\ measured.}
+    \begin{tabularx}{\textwidth}{X l l}
+        \toprule
+        \textbf{Requirement} & \textbf{Target} & \textbf{Measured} \\
+        \midrule
+        Obstacle reaction time (STVL update $\to$ \texttt{cmd\_vel}) & $\leq 250$~ms & 47~ms \\
+        Waypoint arrival accuracy (2~m IGVC tolerance)               & $\leq 1$~m    & $<1$~m \\
+        Minimum average speed (44~ft IGVC stretch)                    & $\geq 1$~mph  & \placeholder{measured} \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+% =============================================================================
+% IGVC 2026 §9 -- KEY PERFORMANCE INDICATORS
+% =============================================================================
+\section{Key Performance Indicators}
+\label{sec:kpi}
+
+\begin{table}[H]
+    \centering
+    \small
+    \caption{AutoNav key performance indicators: target vs.\ measured.}
+    \label{tab:kpis}
+    \begin{tabularx}{\textwidth}{X l l}
+        \toprule
+        \textbf{KPI} & \textbf{Target} & \textbf{Measured} \\
+        \midrule
+        Course completion time (Webots simulation)         & $\leq 5$~min   & \placeholder{measured~min} \\
+        Course completion time (field, IGVC 6~min ceiling) & $\leq 5$~min   & \placeholder{measured~min} \\
+        Ramp ascension ($\leq 15\%$ gradient per IGVC II.2)  & Pass           & \placeholder{Pass/fail} \\
+        Maximum ground speed (hardware-governed)           & $\leq 5$~mph   & 3.4~mph (1.53~m/s) \\
+        Minimum average speed (44~ft hold-up rule)         & $\geq 1$~mph   & \placeholder{measured~mph} \\
+        Obstacle reaction time                             & $\leq 250$~ms  & 47~ms \\
+        Battery runtime under autonomous load              & $\geq 6$~min   & $\sim$6.5~h calc.; \placeholder{measured~min} \\
+        Wireless E-stop range (100~ft IGVC minimum)        & $\geq 150$~ft  & $>$100~ft (verified) \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\textbf{Target rationale.} Course completion is set at $\leq 5$~min, one minute under
+the IGVC II.2 six-minute ceiling, leaving margin for a slow restart after a
+\texttt{RecoveryNode} fallback. Maximum speed is hardware-governed at 3.4~mph
+(below the 5~mph rule cap and above the 1~mph minimum hold-up threshold), giving the
+MPPI controller a stable operating point. Battery runtime targets at least one full
+6~min course run plus margin for warm-up and a queued retry. The wireless E-stop has
+been verified to operate beyond the IGVC 100~ft minimum with a comfortable margin to
+absorb multipath and antenna-orientation variability during the open-field range test.
+
+% =============================================================================
+% IGVC 2026 §10 -- ANALYSIS OF COMPLETE VEHICLE
+% =============================================================================
+\section{Analysis of Complete Vehicle}
+\label{sec:analysis}
+
+\subsection{Lessons Learned}
+
+\placeholder{Describe what the team learned during construction and system integration.
+Examples: integration sequencing (bench $\to$ stand-up $\to$ field), benefit of starting
+with a COTS chassis, importance of fusing IMU yaw rather than wheel-only odometry,
+field-tuning of HSV thresholds, etc.}
+
+\subsection{Failure Points and Resolutions}
+
+\begin{table}[H]
+    \centering
+    \small
+    \caption{Known failure modes and mitigations.}
+    \begin{tabularx}{\textwidth}{l X X}
+        \toprule
+        \textbf{Layer} & \textbf{Failure} & \textbf{Mitigation} \\
+        \midrule
+        Mechanical & Fasteners loosen under vibration & Loctite + Nyloc nuts; periodic torque checks \\
+        Electrical & Motor inrush brown-out on shared rail & Separate Jetson power rail \\
+        Electrical & Wireless E-stop link loss & Heartbeat timeout cuts motor relay power \\
+        Sensing & Encoder dropout & Local EKF reverts to IMU prediction \\
+        Sensing & GPS multipath / dropout & 6$\sigma$ outlier rejection; differential fusion \\
+        Perception & HSV threshold drift across lighting & Adaptive $V$-floor; live-tunable HSV bounds \\
+        Costmap & Stale semantic cells linger & STVL 5~s decay; semantic raytrace clearing \\
+        Software & Stale \texttt{cmd\_vel} & 300~ms watchdog forces motor stop \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\subsection{Safety, Reliability, and Durability}
+
+Safety is enforced at every layer: a hardware speed cap (4600~RPM $\to$ 1.53~m/s) in the
+Teensy firmware, a 300~ms serial watchdog on the Teensy, a 100~ms CAN heartbeat timeout
+per SparkMAX, a software slew-rate limit in the actuator node, and Nav2's MPPI collision
+critic plus a costmap inflation radius of 0.65~m. The MPPI \texttt{CostCritic} uses
+\texttt{consider\_footprint: true} so the rectangular $1.00 \times 0.74$~m footprint is
+swept along every rollout trajectory.
+
+\subsection{Software Testing, Bug Tracking, and Version Control}
+
+Software is developed in a Git repository (\href{https://github.com/Paarseus/IGVC_ROS2}
+{\texttt{github.com/Paarseus/IGVC\_ROS2}}) with feature branches, pull-request review,
+and automated linting via \texttt{colcon test}. All parameters --- perception thresholds,
+EKF covariances, Nav2 gains, MPPI critic weights, actuator slew limits --- live in
+version-controlled YAML.
+
+\subsection{Simulation and Physical Testing}
+
+Development and regression testing use the \texttt{avros\_sim} package, which runs Webots
+with a \texttt{cpp\_campus.wbt} world imported from the Cal Poly Pomona OpenStreetMap
+extract. A custom Webots driver publishes simulated VLP-16, ZED, and GNSS topics that
+the rest of the stack consumes unchanged, enabling perception and Nav2 development
+without field time.
+
+Physical testing progresses through four stages: bench (subsystem in isolation),
+simulation (Webots full stack), low-speed field tests on a flat surface, and full-speed
+field tests on the IGVC practice course.
+
+\placeholder{Identify the key differences observed between simulation and the
+real-world test course (e.g., GPS noise floor, lighting variance vs. Webots, suspension
+dynamics not modeled in Webots). Describe how the test data drove parameter changes.}
+
+% =============================================================================
+% IGVC 2026 §11 -- CYBER SECURITY ANALYSIS
+% =============================================================================
+\section{Cyber Security Analysis}
+\label{sec:cyber}
+
+Modern robotic and human-driven vehicles are network-connected, contain large amounts
+of software from multiple vendors, and are an inviting target for cyber-attacks. Per
+IGVC 2026 rule IV.3 \S11, we list three cyber vulnerabilities present in our vehicle
+and discuss the steps that should be taken to harden or remove them before the system
+enters series production.
+
+\begin{table}[H]
+    \centering
+    \footnotesize
+    \caption{Top three cyber vulnerabilities and hardening steps.}
+    \begin{tabularx}{\textwidth}{l X X}
+        \toprule
+        \textbf{Vulnerability} & \textbf{Risk} & \textbf{Hardening / Remediation} \\
+        \midrule
+        Onboard network breach
+        & Wi-Fi foothold exposes the ROS~2 discovery service (unauthenticated by default), allowing \texttt{cmd\_vel} injection.
+        & Dedicated subnet with WPA2 (SC-7); CycloneDDS Security with X.509 identities and access-control governance (AC-3). \\
+        \addlinespace
+        WebSocket joystick hijack
+        & The \texttt{avros\_webui} WebSocket can override autonomous \texttt{cmd\_vel} from a local-network attacker.
+        & WSS with pinned cert; session token at pair time; fail-safe disconnect $\to$ E-stop (AC-3, IA-2). \\
+        \addlinespace
+        GPS spoofing / multipath
+        & Spoofed GPS could feed the global EKF a false position, advancing the waypoint cursor prematurely.
+        & Differential GPS fusion (per-step deltas); 6$\sigma$ Mahalanobis outlier rejection (SI-4, SI-7); cross-check GPS heading vs IMU heading. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+In addition to the three vulnerabilities above, safety-critical motion is gated by
+three independent stop mechanisms (physical E-stop, wireless E-stop, software interlock
+in the actuator node) so a single cyber-compromise of the autonomy stack does not by
+itself produce uncontrolled motion --- the hardware relay must be re-enabled by a human
+operator.
+
+\end{document}
