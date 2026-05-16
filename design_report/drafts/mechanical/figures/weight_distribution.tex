@@ -1,0 +1,91 @@
+% Side view of the vehicle showing payload (front) and battery (centered) on the
+% diamond-plate deck, with center-of-gravity marker biased forward of the track
+% midpoint. Muted palette; safety-red reserved for the E-stop and CoG marker only.
+\begin{tikzpicture}[
+    font=\footnotesize,
+    >={Stealth[length=1.8mm, width=1.4mm]},
+    obj/.style={draw, thick, black!75},
+    track/.style={draw=black!70, thick, fill=black!18, rounded corners=4pt},
+    wheel/.style={draw=black!70, circle, fill=black!35, minimum size=0.45cm, inner sep=0pt},
+    deck/.style={draw=black!75, thick, fill=black!8, pattern=north east lines, pattern color=black!25},
+    payload/.style={draw=cppgreen!70!black, semithick, fill=cppgreen!15, rounded corners=2pt},
+    battery/.style={draw=codeblue!70!black, semithick, fill=codeblue!12, rounded corners=2pt},
+    shelf/.style={draw=black!55, thin, dashed, fill=none},
+    dim/.style={<->, gray!70, thin},
+    extline/.style={gray!50, thin},
+    dimtxt/.style={font=\scriptsize, gray!60!black},
+    cogmark/.style={circle, draw=warnred, line width=0.9pt, fill=warnred!15, minimum size=0.42cm, inner sep=0pt},
+    refline/.style={gray!55, very thin, dash dot},
+    cogline/.style={warnred!75, very thin, densely dashed},
+]
+
+% --- Ground line (clean baseline, no hatched ticks competing for ink) ---
+\draw[black!60, semithick] (-0.5, 0) -- (8.5, 0);
+
+% --- Track outline (side view): rounded rectangle, wheels visible ---
+\draw[track] (0.2,0.1) -- (7.8,0.1) -- (7.95,0.55) -- (7.95,1.0) -- (0.05,1.0) -- (0.05,0.55) -- cycle;
+\node[wheel] at (0.7, 0.45) {};
+\node[wheel] at (7.3, 0.45) {};
+\foreach \x in {2.0,3.5,5.0,6.5}{ \node[wheel, minimum size=0.32cm] at (\x, 0.45) {}; }
+
+% --- Diamond plate deck on top of tracks ---
+\draw[deck] (0.3, 1.0) rectangle (7.7, 1.25);
+\node[dimtxt, anchor=south, font=\scriptsize\itshape] at (4.0, 1.28) {\hspace*{4cm}}; % placeholder kept blank — deck label moved below
+
+% --- Sensor shelf (downplayed: dashed outline only, no fill) ---
+\draw[shelf] (1.0, 2.95) rectangle (6.8, 3.45);
+\node[font=\scriptsize, black!55] at (3.9, 3.20) {sensor shelf (20'' AGL)};
+\draw[shelf, thin] (1.0, 2.95) -- (1.0, 2.6);  % shelf supports
+\draw[shelf, thin] (6.8, 2.95) -- (6.8, 2.6);
+
+% --- Payload (front = right) ---
+\draw[payload] (5.6, 1.25) rectangle (7.4, 2.6);
+\node[align=center, font=\scriptsize] at (6.5, 1.95) {Payload\\\textbf{20 lb}};
+
+% --- Battery (centered on deck) ---
+\draw[battery] (2.8, 1.25) rectangle (4.8, 2.55);
+\node[align=center, font=\scriptsize] at (3.8, 1.9) {48\,V\\Battery};
+
+% --- Rear E-stop standoff (red reserved for safety) ---
+\draw[obj] (0.05, 1.0) -- (-0.4, 1.0) -- (-0.4, 2.4);
+\node[draw=warnred, circle, fill=warnred!60, minimum size=0.32cm, inner sep=0pt] at (-0.4, 2.5) {};
+\node[font=\scriptsize, anchor=east, align=right] at (-0.55, 2.5) {E-stop\\(24'' AGL)};
+
+% --- Reference centerlines: track midpoint (gray) and CoG drop (red) ---
+\draw[refline] (4.0, 0) -- (4.0, 2.85);
+\draw[cogline] (4.95, 0) -- (4.95, 2.40);
+
+% --- CoG marker (placed in gap between battery and payload, large + ringed) ---
+\node[cogmark] (cog) at (4.95, 1.95) {};
+\draw[warnred, thin] (cog.north) -- (cog.south);
+\draw[warnred, thin] (cog.east)  -- (cog.west);
+% Leader from label to marker; explicit "Vehicle CoG" so it's not confused with payload's own CoG
+\draw[warnred!75, thin] (5.65, 2.70) -- (cog.north east);
+\node[font=\scriptsize\bfseries, warnred, anchor=south west, inner sep=1pt] at (5.55, 2.70) {Vehicle CoG};
+
+% --- Body-frame coordinate marker (top-left of plot) ---
+\begin{scope}[shift={(-0.35, 3.4)}]
+    \draw[->, black!75, thin] (0,0) -- (0.5,0) node[font=\scriptsize, anchor=west, inner sep=1pt]{$x_b$};
+    \draw[->, black!75, thin] (0,0) -- (0,0.5) node[font=\scriptsize, anchor=south, inner sep=1pt]{$z_b$};
+\end{scope}
+
+% --- Dimension strip well below the chassis (clean margin) ---
+\draw[extline] (0.05, 0)    -- (0.05, -0.80);
+\draw[extline] (7.95, 0)    -- (7.95, -0.80);
+\draw[extline] (4.0, 0)     -- (4.0, -0.45);
+\draw[extline] (4.95, 0)    -- (4.95, -0.45);
+\draw[dim] (4.0, -0.35) -- (4.95, -0.35);
+\node[dimtxt, anchor=west, inner sep=2pt] at (5.0, -0.35) {CoG offset};
+\draw[dim] (0.05, -0.70) -- (7.95, -0.70);
+\node[dimtxt, fill=white, inner sep=1pt] at (4.0, -0.70) {Wheelbase / deck length};
+
+% --- Front / rear axis at the very bottom ---
+\node[font=\scriptsize\itshape, gray!70!black] at (0.5, -1.10) {rear};
+\node[font=\scriptsize\itshape, gray!70!black] at (7.5, -1.10) {front};
+\draw[->, gray!70!black, thin] (-0.3,-1.20) -- (8.4,-1.20) node[font=\scriptsize, anchor=west, inner sep=1pt]{$+x$};
+
+% --- Deck material leader (callout from above the deck) ---
+\draw[gray!60, thin] (2.0, 1.12) -- (1.4, 2.85) -- (0.7, 2.85);
+\node[font=\scriptsize, black!60, anchor=east] at (0.65, 2.85) {1/8'' diamond-plate deck};
+
+\end{tikzpicture}

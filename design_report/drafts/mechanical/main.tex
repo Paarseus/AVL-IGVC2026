@@ -1,0 +1,291 @@
+% ============================================================================
+% IGVC 2026 Design Report --- Mechanical Section
+% Cal Poly Pomona Autonomous Vehicle Lab
+% Standalone subteam document; section numbering starts at 4 to match the
+% report-level layout (1.Team / 2.Architecture / 3.Innovations / 4.Mechanical).
+% ============================================================================
+\documentclass[11pt, letterpaper]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{enumitem}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{tikz}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage[T1]{fontenc}
+
+\usetikzlibrary{shapes.geometric, shapes.misc, arrows.meta, positioning, fit, calc, backgrounds, decorations.pathreplacing, patterns}
+
+% ---- Colors (match report-level palette) ----
+\definecolor{cppgreen}{RGB}{30, 90, 50}
+\definecolor{codeblue}{RGB}{0, 80, 160}
+\definecolor{warnred}{RGB}{180, 40, 40}
+\definecolor{lightgray}{RGB}{230, 230, 230}
+
+\hypersetup{colorlinks=true, linkcolor=cppgreen, citecolor=cppgreen, urlcolor=codeblue}
+
+% ---- Headers / Footers ----
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small Cal Poly Pomona Autonomous Vehicle Lab}
+\fancyhead[R]{\small IGVC 2026 --- Mechanical}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ---- Section formatting (match autonomy) ----
+\titleformat{\section}{\large\bfseries\color{cppgreen}}{\thesection.}{0.5em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{0.5em}{}
+\titlespacing*{\section}{0pt}{1.2ex}{0.6ex}
+\titlespacing*{\subsection}{0pt}{0.8ex}{0.3ex}
+
+% ---- Macros ----
+\newcommand{\placeholder}[1]{\textcolor{warnred}{\textbf{[#1]}}}
+\newcommand{\robotname}{PLACEHOLDER\_ROBOT\_NAME}
+
+% Tighter lists
+\setlist[itemize]{noitemsep, topsep=2pt, leftmargin=*}
+\setlist[enumerate]{noitemsep, topsep=2pt, leftmargin=*}
+
+% Start at section 4 so this standalone PDF matches the report layout.
+\setcounter{section}{3}
+
+\captionsetup{font=small, labelfont={bf,color=cppgreen}}
+
+\begin{document}
+
+% ============================================================================
+% 4. MECHANICAL DESIGN
+% ============================================================================
+\section{Mechanical Design}
+
+\subsection{Overview}
+
+As first-year IGVC participants, the mechanical subteam prioritized a simple, modular,
+and cost-effective platform that concentrates budget on the sensors and compute
+required for autonomous navigation. \robotname{} is built on the commercially available
+AndyMark\textsuperscript{\textregistered} Raptor Track Drive, a tracked differential
+base selected for its all-terrain traction and short delivery lead time. A reconfigurable
+80/20 T-slot aluminum superstructure is mounted directly to the chassis, allowing rapid
+iteration on sensor mounts and shelf geometry through the design cycle. The same chassis
+can host different electronics housings for future competitions; for IGVC~2026 the
+housing is mounted on the upper shelf so that the electronics, payload, and E-stop are
+all readily accessible during operation and inspection. Figure~\ref{fig:cad_iso} shows
+the integrated vehicle.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[t]{0.48\linewidth}
+        \centering
+        \includegraphics[width=\linewidth, trim=10 10 10 10, clip]{figures/cad_isometric.png}
+        \caption{Front-quarter view showing the elevated sensor shelf, payload bay, and tracked base.}
+        \label{fig:cad_iso}
+    \end{subfigure}\hfill
+    \begin{subfigure}[t]{0.48\linewidth}
+        \centering
+        \includegraphics[width=\linewidth, trim=10 10 10 10, clip]{figures/cad_rear.png}
+        \caption{Rear three-quarter view; rear-mounted shelf supports the mechanical E-stop and extends the chassis to meet the 3~ft length minimum.}
+        \label{fig:cad_rear}
+    \end{subfigure}
+    \caption{CAD renders of \robotname{}: AndyMark Raptor base with 80/20 T-slot superstructure, diamond-plate payload deck, and 20~in elevated sensor shelf.}
+    \label{fig:cad_overview}
+\end{figure}
+
+\subsection{Frame Structure and Chassis Integration}
+
+The Raptor base contributes the drive sprockets, idlers, and rubber-track belts that
+distribute vehicle weight over a large contact patch, improving traction and stability
+on the uneven turf and gravel sections of the IGVC course. A $21.5~\text{in} \times 30~\text{in}$,
+$1/8$~in thick A36 diamond-plate steel base is bolted directly to the Raptor mounting
+rails. The diamond plate serves three functions: (i) a rigid surface for heavy
+components, (ii) an EMI-attenuating ground plane between battery and tracked drive, and
+(iii) a low-mounted mass that lowers the center of gravity.
+
+The superstructure is built from 80/20\textsuperscript{\textregistered} 20-Series T-slot
+aluminum extrusion. T-slot construction is modular and reconfigurable, eliminates exposed
+threaded ends (T-slot nuts ride inside the channel), and lets the team prototype new
+sensor mounts in minutes with 3D-printed brackets. The sensor shelf, payload mount, and
+acrylic weather panels all attach to the same 20-Series profile.
+
+Weight placement was an explicit design priority. The 48~V battery pack --- the heaviest
+single component on the vehicle --- is mounted at the geometric \textit{center} of the
+diamond plate so that its mass contributes minimally to pitch and yaw inertia. The 20~lb
+payload bay sits at the \textit{front} of the deck on a 3D-printed cradle so it remains
+accessible for inspection and so the operator can verify payload retention from outside
+the chassis. The resulting load distribution (Figure~\ref{fig:weight_dist}) places the
+center of gravity slightly forward of the track midpoint, biased toward the payload
+end; because both heavy masses sit low on the diamond-plate deck, the overall CoG height
+is minimized and the vehicle remains stable on inclines and during skid-steer turns.
+Table~\ref{tab:specs} summarizes the resulting vehicle parameters.
+
+% ----- Weight distribution figure (Phase 3 will replace placeholder) -----
+\begin{figure}[H]
+    \centering
+    \input{figures/weight_distribution.tex}
+    \caption{Side-view weight distribution. The 48~V battery is mounted at the geometric
+    center of the diamond-plate deck and the 20~lb payload sits at the front. With the
+    payload biasing the load forward of the heavy battery, the center of gravity (CoG)
+    sits slightly forward of the track midpoint. Placing both heavy masses low on the
+    deck minimizes overall CoG height and reduces pitch moment during braking and
+    sloped traversal.}
+    \label{fig:weight_dist}
+\end{figure}
+
+% ----- Frame top-view with dimensions -----
+\begin{figure}[H]
+    \centering
+    \input{figures/frame_dimensions.tex}
+    \caption{Top-view footprint and key dimensions. The diamond-plate deck
+    ($21.5'' \times 30''$) hosts battery and payload; the upper sensor shelf
+    ($23'' \times 23'' \times 6''$) sits 20~in above ground, providing a $24''$
+    e-stop mounting height (rear shelf) and clear lines of sight for LiDAR and cameras.}
+    \label{fig:frame_dims}
+\end{figure}
+
+\begin{table}[H]
+    \centering
+    \small
+    \caption{\robotname{} vehicle specifications.}
+    \label{tab:specs}
+    \begin{tabular}{l l}
+        \toprule
+        \textbf{Parameter} & \textbf{Value} \\
+        \midrule
+        Drive configuration & Tracked differential (skid-steer) \\
+        Base platform & AndyMark Raptor Track Drive \\
+        Overall length $\times$ width & $\sim 36'' \times 24''$ (meets 3~ft min.) \\
+        Overall vehicle height (excl.\ E-stop antenna) & $\sim 29''$ ($\sim 2.4$~ft; well under 6~ft IGVC max) \\
+        Sensor-shelf height & $20''$ (top surface) \\
+        E-stop mounting height & $24''$ (rear shelf, centered) \\
+        Payload capacity (verified) & $\geq 20$~lb \\
+        Drive motors & 2$\times$ REV NEO brushless (12--48~V) \\
+        Motor controllers & 2$\times$ REV SparkMAX (CAN, 1~Mbit/s) \\
+        Battery pack & 48~V lithium, rear-mounted \\
+        Frame material & 80/20 20-Series T-slot aluminum extrusion \\
+        Deck material & 1/8'' A36 diamond-plate steel \\
+        Weather panels & Polycarbonate / acrylic in T-slot grooves \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{Drive System}
+
+\robotname{} uses a tracked \textbf{differential-drive} architecture: two REV NEO
+brushless motors, each commanded by a REV SparkMAX controller over CAN, independently
+drive the left and right track loops. The choice eliminates steering linkages, reduces
+the part count, and produces a control plant that maps cleanly onto the ROS~2 Nav2 / MPPI
+controller running on the Jetson. With $v_L$ and $v_R$ the left and right track linear
+velocities, the body-frame linear and angular rates are
+\begin{align}
+    v &= \tfrac{1}{2}(v_R + v_L), &
+    \omega &= \tfrac{1}{b}(v_R - v_L),
+\end{align}
+where $b$ is the track width (effective lever arm between contact patches). The three
+operating modes used by the planner are illustrated in
+Figure~\ref{fig:diff_drive_kinematics}.
+
+\begin{itemize}
+    \item \textbf{Pivot turn:} one track is held stationary while the other drives forward
+    ($v_L=0$, $v_R>0$, or vice versa). The robot rotates about the stationary contact
+    patch with radius $r = b/2$.
+    \item \textbf{In-place rotation (spin):} the tracks rotate in opposite directions at
+    equal magnitude ($v_R = -v_L$). The instantaneous center of rotation (ICR) lies on
+    the geometric center, yielding zero translation and maximum yaw rate. This mode is
+    essential for the tight sequential-cone obstacle sections of the AutoNav course.
+    \item \textbf{Gradual curve:} both tracks move forward with $v_R \neq v_L$. The ICR
+    lies outside the contact patch and the turning radius is $R = \tfrac{b}{2}\,
+    \tfrac{v_R + v_L}{v_R - v_L}$.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \input{figures/diff_drive_kinematics.tex}
+    \caption{Three differential-drive operating modes commanded through a single
+    $(v,\omega)$ target. Blue arrows show each track's linear velocity, with
+    arrow length proportional to $|v|$; the red ringed marker is the
+    instantaneous center of rotation ($\mathrm{ICR}$). Track width $b$ is
+    dimensioned once in panel (a) and is identical for all three panels.}
+    \label{fig:diff_drive_kinematics}
+\end{figure}
+
+The full electromechanical signal path is shown in Figure~\ref{fig:drivetrain_block}.
+The Jetson Orin issues \texttt{geometry\_msgs/}\allowbreak\texttt{Twist} commands at
+50~Hz to a Teensy~4.1 motion bridge, which decomposes them into per-side wheel
+velocities and forwards them over CAN at 1~Mbit/s to the two SparkMAX controllers.
+Each SparkMAX closes a velocity loop around its NEO motor at 1~kHz using the integrated
+Hall encoders.
+
+\begin{figure}[H]
+    \centering
+    \input{figures/drivetrain_block.tex}
+    \caption{Drivetrain signal chain. The Jetson plans at 50~Hz; the Teensy converts
+    Twist commands to per-side wheel velocities and bridges USB$\rightarrow$CAN; each
+    SparkMAX closes a 1~kHz velocity loop around its NEO motor.}
+    \label{fig:drivetrain_block}
+\end{figure}
+
+\subsection{Weatherproofing}
+
+Outdoor operation requires the electronics bay to tolerate rain and direct sun. The
+sensor-shelf walls are formed from cut-to-fit acrylic panels that slide directly into the
+20-Series T-slot grooves; weatherstripping gasket fills the residual gap and remains
+seated under the vibration produced by the tracks. The top panel is mildly angled so
+that water runs off rather than pools, and incorporates a sliding access door for
+servicing wiring, replacing the payload, or accessing the compute. The LiDAR is mounted
+externally above the shelf to keep its $360^\circ$ field of view unobstructed; the ZED~X
+cameras sit behind their own AR-coated windows in the front-facing acrylic.
+
+\subsection{Constraints and Compliance}
+
+IGVC requires a minimum vehicle length of 3~ft and an E-stop mounted between 2~ft and
+4~ft above the ground, centered on the rear. To meet both, the original chassis was
+extended with a rear-mounted shelf that carries the mechanical E-stop button at $24''$
+height (Figure~\ref{fig:cad_rear}). The extension also creates space for the
+counter-balanced battery placement without forcing the payload bay forward of the
+tracks, where it would adversely shift the CoG.
+
+\subsection{Safety}
+
+The safety architecture (Figure~\ref{fig:safety_block}) implements a hardware-enforced
+two-channel emergency stop: either the rear-mounted mechanical E-stop button or the
+wireless remote E-stop receiver opens a relay in series with the motor-controller
+enable line. When the relay opens the SparkMAX controllers immediately disable PWM
+output and brake the NEO motors via the integrated short-brake mode; software is not in
+the loop, so a Jetson hang or ROS crash cannot defeat the stop. Indicator LEDs visible
+from outside the chassis show the armed/disarmed state for the IGVC safety inspection.
+
+\begin{figure}[H]
+    \centering
+    \input{figures/safety_block.tex}
+    \caption{Two-channel emergency stop. The mechanical (rear-shelf) and wireless E-stops
+    are wired in series with the motor-enable relay; either one open de-energizes both
+    SparkMAX controllers, independent of software state.}
+    \label{fig:safety_block}
+\end{figure}
+
+% ----- References -----
+\subsection*{References (Mechanical)}
+\small
+\sloppy
+\begin{enumerate}[label={[\arabic*]}]
+    \item AndyMark Inc., \textit{Raptor Track Drive}, product page,
+    \url{https://andymark.com/products/raptor-track-drive}.
+    \item 80/20 Inc., \textit{20-Series T-Slot Aluminum Framing}, product catalog,
+    \url{https://8020.net/}.
+    \item REV Robotics, \textit{NEO Brushless Motor and SPARK~MAX Motor Controller User
+    Manuals}, \url{https://www.revrobotics.com/}.
+    \item IGVC, \textit{IGVC 2026 Rules and Course Requirements}, Section 4 (vehicle
+    configuration), \url{http://www.igvc.org/}.
+\end{enumerate}
+
+\end{document}
